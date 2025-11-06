@@ -3,12 +3,13 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Package, BarChart3, Settings } from "lucide-react"
+import { LayoutDashboard, Package, BarChart3, Settings, LogOut } from "lucide-react"
 
 const navigation = [
   { name: "Dashboard", href: "/lavanderia/dashboard", icon: LayoutDashboard },
   { name: "Pedidos", href: "/lavanderia/pedidos", icon: Package },
   { name: "Estadísticas", href: "/lavanderia/estadisticas", icon: BarChart3 },
+  { name: "Configuración", href: "/lavanderia/configuracion", icon: Settings },
 ]
 
 export function LaundrySidebar() {
@@ -74,7 +75,7 @@ export function LaundrySidebar() {
           href="/"
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent"
         >
-          <Settings className="h-5 w-5" />
+          <LogOut className="h-5 w-5" />
           Cerrar Sesión
         </Link>
       </div>
