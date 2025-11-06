@@ -1,0 +1,111 @@
+"use client"
+
+import { useRouter } from "next/navigation"
+import { MainLayout } from "@/components/main-layout"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { Separator } from "@/components/ui/separator"
+import { ArrowLeft } from "lucide-react"
+
+export default function ConfiguracionPage() {
+  const router = useRouter()
+
+  return (
+    <MainLayout title="Configuración">
+      <div className="space-y-8">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="sm" onClick={() => router.push("/dashboard")} className="gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Volver al Dashboard
+          </Button>
+        </div>
+
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Configuración</h1>
+          <p className="text-muted-foreground">Administra la configuración de la plataforma.</p>
+        </div>
+
+        <div className="grid gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Información General</CardTitle>
+              <CardDescription>Configura los detalles básicos de la plataforma.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="platform-name">Nombre de la Plataforma</Label>
+                <Input id="platform-name" defaultValue="LaundryPro" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="support-email">Email de Soporte</Label>
+                <Input id="support-email" type="email" defaultValue="support@laundrypro.com" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="support-phone">Teléfono de Soporte</Label>
+                <Input id="support-phone" type="tel" defaultValue="+1234567890" />
+              </div>
+              <Button>Guardar Cambios</Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Notificaciones</CardTitle>
+              <CardDescription>Configura las preferencias de notificaciones.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Notificaciones por Email</Label>
+                  <p className="text-sm text-muted-foreground">Recibe notificaciones importantes por email.</p>
+                </div>
+                <Switch defaultChecked />
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Alertas de Nuevos Pedidos</Label>
+                  <p className="text-sm text-muted-foreground">Notificación cuando se registra un nuevo pedido.</p>
+                </div>
+                <Switch defaultChecked />
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Reportes Semanales</Label>
+                  <p className="text-sm text-muted-foreground">Recibe un resumen semanal del rendimiento.</p>
+                </div>
+                <Switch />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Seguridad</CardTitle>
+              <CardDescription>Configura las opciones de seguridad de la cuenta.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="current-password">Contraseña Actual</Label>
+                <Input id="current-password" type="password" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="new-password">Nueva Contraseña</Label>
+                <Input id="new-password" type="password" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password">Confirmar Nueva Contraseña</Label>
+                <Input id="confirm-password" type="password" />
+              </div>
+              <Button>Cambiar Contraseña</Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </MainLayout>
+  )
+}
