@@ -12,17 +12,31 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 interface HeaderProps {
-  title: string
+  title?: string
   subtitle?: string
+  profileHref?: string
+  settingsHref?: string
 }
 
-export function Header({ title, subtitle }: HeaderProps) {
+export function Header({ title, subtitle, profileHref, settingsHref }: HeaderProps) {
+  const pathname = usePathname()
+
+  const normalizedProfileHref = profileHref ?? (pathname?.startsWith("/cliente") ? "/cliente/perfil" : "/perfil")
+  const normalizedSettingsHref =
+    settingsHref ??
+    (pathname?.startsWith("/lavanderia")
+      ? "/lavanderia/configuracion"
+      : pathname?.startsWith("/cliente")
+        ? "/cliente/configuracion"
+        : "/configuracion")
+
   return (
     <header className="flex h-16 items-center justify-between border-b border-border bg-card px-6">
       <div>
-        <h1 className="text-2xl font-semibold text-foreground">{title}</h1>
+        {title && <h1 className="text-2xl font-semibold text-foreground">{title}</h1>}
         {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
       </div>
 
@@ -49,13 +63,13 @@ export function Header({ title, subtitle }: HeaderProps) {
             <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="/perfil" className="cursor-pointer">
+              <Link href={normalizedProfileHref} className="cursor-pointer">
                 <User className="mr-2 h-4 w-4" />
                 <span>Perfil</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href="/configuracion" className="cursor-pointer">
+              <Link href={normalizedSettingsHref} className="cursor-pointer">
                 <svg
                   className="mr-2 h-4 w-4"
                   fill="none"
