@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Phone, Mail, MapPin, Calendar, Package, DollarSign } from "lucide-react"
-import MainLayout from "@/components/main-layout"
+import MainLayout from "@/components/layouts/main-layout"
 
 export default function ClientDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter()

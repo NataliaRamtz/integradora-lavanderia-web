@@ -1,4 +1,4 @@
-import { LaundryLayout } from "@/components/laundry-layout"
+import { LaundryLayout } from "@/components/layouts/laundry-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TrendingUp, TrendingDown } from "lucide-react"

@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Camera, User, Mail, Phone, MapPin, Building } from "lucide-react"
-import MainLayout from "@/components/main-layout"
+import MainLayout from "@/components/layouts/main-layout"
 
 export default function ProfilePage() {
   const [formData, setFormData] = useState({

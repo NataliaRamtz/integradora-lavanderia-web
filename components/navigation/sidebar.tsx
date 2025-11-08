@@ -2,9 +2,10 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { LayoutDashboard, Users, Settings, Store, CreditCard, Ticket, ChevronLeft, Menu } from "lucide-react"
 import { useState } from "react"
+import { LayoutDashboard, Users, Settings, Store, CreditCard, Ticket, ChevronLeft, Menu } from "lucide-react"
+
+import { cn } from "@/lib/utils"
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -25,7 +26,6 @@ export function Sidebar() {
         isCollapsed ? "w-16" : "w-64",
       )}
     >
-      {/* Logo */}
       <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-4">
         {!isCollapsed && (
           <div className="flex items-center gap-3">
@@ -58,7 +58,6 @@ export function Sidebar() {
         </button>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 space-y-1 p-4">
         {navigation.map((item) => {
           const isActive = pathname === item.href
@@ -81,7 +80,6 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* User Section */}
       <div className="border-t border-sidebar-border p-4">
         <Link
           href="/configuracion"
@@ -95,3 +93,4 @@ export function Sidebar() {
     </div>
   )
 }
+

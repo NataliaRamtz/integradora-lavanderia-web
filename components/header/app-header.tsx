@@ -14,14 +14,14 @@ import {
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
-interface HeaderProps {
+interface AppHeaderProps {
   title?: string
   subtitle?: string
   profileHref?: string
   settingsHref?: string
 }
 
-export function Header({ title, subtitle, profileHref, settingsHref }: HeaderProps) {
+export function AppHeader({ title, subtitle, profileHref, settingsHref }: AppHeaderProps) {
   const pathname = usePathname()
 
   const normalizedProfileHref = profileHref ?? (pathname?.startsWith("/cliente") ? "/cliente/perfil" : "/perfil")
@@ -119,3 +119,4 @@ export function Header({ title, subtitle, profileHref, settingsHref }: HeaderPro
     </header>
   )
 }
+

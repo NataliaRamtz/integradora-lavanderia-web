@@ -1,6 +1,7 @@
 import type React from "react"
-import { Sidebar } from "./sidebar"
-import { Header } from "./header"
+
+import { Sidebar } from "../navigation/sidebar"
+import { AppHeader } from "../header"
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -13,7 +14,7 @@ export function MainLayout({ children, title, subtitle }: MainLayoutProps) {
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
-        <Header title={title} subtitle={subtitle} />
+        <AppHeader title={title} subtitle={subtitle} />
         <main className="flex-1 overflow-y-auto p-6">{children}</main>
       </div>
     </div>
@@ -21,3 +22,4 @@ export function MainLayout({ children, title, subtitle }: MainLayoutProps) {
 }
 
 export default MainLayout
+

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { ArrowLeft, Phone, Mail, MapPin, Calendar, User, Package } from "lucide-react"
-import MainLayout from "@/components/main-layout"
+import MainLayout from "@/components/layouts/main-layout"
 
 export default function OrderDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter()

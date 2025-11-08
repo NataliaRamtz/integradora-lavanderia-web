@@ -1,6 +1,7 @@
 import type React from "react"
-import { LaundrySidebar } from "./laundry-sidebar"
-import { Header } from "./header"
+
+import { LaundrySidebar } from "../navigation/laundry-sidebar"
+import { AppHeader } from "../header"
 
 interface LaundryLayoutProps {
   children: React.ReactNode
@@ -13,7 +14,7 @@ export function LaundryLayout({ children, headerTitle, headerSubtitle }: Laundry
     <div className="flex h-screen overflow-hidden bg-background">
       <LaundrySidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
-        <Header
+        <AppHeader
           title={headerTitle}
           subtitle={headerSubtitle}
           profileHref="/lavanderia/perfil"
@@ -26,3 +27,4 @@ export function LaundryLayout({ children, headerTitle, headerSubtitle }: Laundry
 }
 
 export default LaundryLayout
+

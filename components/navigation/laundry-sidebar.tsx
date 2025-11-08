@@ -2,9 +2,10 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { LayoutDashboard, Package, BarChart3, Settings, LogOut, Ticket, ChevronLeft, Menu } from "lucide-react"
 import { useState } from "react"
+import { LayoutDashboard, Package, BarChart3, Settings, LogOut, Ticket, ChevronLeft, Menu } from "lucide-react"
+
+import { cn } from "@/lib/utils"
 
 const navigation = [
   { name: "Dashboard", href: "/lavanderia/dashboard", icon: LayoutDashboard },
@@ -25,7 +26,6 @@ export function LaundrySidebar() {
         isCollapsed ? "w-16" : "w-64",
       )}
     >
-      {/* Logo */}
       <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-4">
         {!isCollapsed && (
           <div className="flex items-center gap-3">
@@ -61,7 +61,6 @@ export function LaundrySidebar() {
         </button>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 space-y-1 p-4">
         {navigation.map((item) => {
           const isActive = pathname === item.href
@@ -84,7 +83,6 @@ export function LaundrySidebar() {
         })}
       </nav>
 
-      {/* User Section */}
       <div className="border-t border-sidebar-border p-4">
         {!isCollapsed && (
           <div className="mb-4 px-3">
@@ -105,3 +103,4 @@ export function LaundrySidebar() {
     </div>
   )
 }
+

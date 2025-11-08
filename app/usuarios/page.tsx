@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Search, Plus, Mail, Phone } from "lucide-react"
-import MainLayout from "@/components/main-layout"
+import MainLayout from "@/components/layouts/main-layout"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
