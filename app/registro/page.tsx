@@ -33,7 +33,7 @@ export default function RegisterPage() {
       return
     }
     console.log("[v0] Register attempt:", formData)
-    window.location.href = "/dashboard"
+    window.location.href = "/lavanderia/dashboard"
   }
 
   return (

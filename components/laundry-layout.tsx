@@ -2,7 +2,7 @@ import type React from "react"
 import { LaundrySidebar } from "./laundry-sidebar"
 import { Header } from "./header"
 
-export default function LaundryLayout({ children }: { children: React.ReactNode }) {
+export function LaundryLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <LaundrySidebar />
@@ -13,3 +13,5 @@ export default function LaundryLayout({ children }: { children: React.ReactNode 
     </div>
   )
 }
+
+export default LaundryLayout

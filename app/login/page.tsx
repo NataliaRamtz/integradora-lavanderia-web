@@ -21,17 +21,12 @@ export default function LoginPage() {
     console.log("[v0] Login attempt:", { email, rememberMe })
 
     const isAdmin = email === "admin@laundrypro.com"
-    const isLaundry = email === "lavanderia@cleanfresh.com"
-
     if (isAdmin) {
       // Admin goes to admin dashboard
       window.location.href = "/dashboard"
-    } else if (isLaundry) {
-      // Laundry goes to laundry dashboard
-      window.location.href = "/lavanderia/dashboard"
     } else {
-      // Client goes to client dashboard
-      window.location.href = "/cliente/dashboard"
+      // Laundry staff/managers go to laundry dashboard
+      window.location.href = "/lavanderia/dashboard"
     }
   }
 
