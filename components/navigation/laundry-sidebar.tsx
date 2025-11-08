@@ -2,22 +2,44 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useState } from "react"
-import { LayoutDashboard, Package, BarChart3, Settings, LogOut, Ticket, ChevronLeft, Menu } from "lucide-react"
+import { useEffect, useState } from "react"
+import {
+  LayoutDashboard,
+  Package,
+  BarChart3,
+  Settings,
+  LogOut,
+  Ticket,
+  Menu,
+  Droplet,
+  UserPlus,
+  NotebookPen,
+} from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
-const navigation = [
+export const laundryNavigation = [
   { name: "Dashboard", href: "/lavanderia/dashboard", icon: LayoutDashboard },
   { name: "Pedidos", href: "/lavanderia/pedidos", icon: Package },
-  { name: "Estadísticas", href: "/lavanderia/estadisticas", icon: BarChart3 },
+  { name: "Walk-In", href: "/lavanderia/walk-in", icon: UserPlus },
+  { name: "Catálogos", href: "/lavanderia/catalogos", icon: NotebookPen },
   { name: "Tickets", href: "/lavanderia/tickets", icon: Ticket },
+  { name: "Estadísticas", href: "/lavanderia/estadisticas", icon: BarChart3 },
   { name: "Configuración", href: "/lavanderia/configuracion", icon: Settings },
 ]
 
 export function LaundrySidebar() {
   const pathname = usePathname()
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
+    if (typeof window === "undefined") {
+      return false
+    }
+    return window.localStorage.getItem("laundry-sidebar-collapsed") === "true"
+  })
+
+  useEffect(() => {
+    window.localStorage.setItem("laundry-sidebar-collapsed", String(isCollapsed))
+  }, [isCollapsed])
 
   return (
     <div
@@ -26,43 +48,33 @@ export function LaundrySidebar() {
         isCollapsed ? "w-16" : "w-64",
       )}
     >
-      <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-4">
-        {!isCollapsed && (
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-6 w-6 text-primary-foreground"
-              >
-                <path d="M3 6h18" />
-                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                <line x1="10" x2="10" y1="11" y2="17" />
-                <line x1="14" x2="14" y1="11" y2="17" />
-              </svg>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-lg font-semibold text-sidebar-foreground">LaundryPro</span>
-              <span className="text-xs text-muted-foreground">Clean & Fresh Laundry</span>
-            </div>
-          </div>
+      <div
+        className={cn(
+          "flex h-16 items-center border-b border-sidebar-border px-4 transition-all",
+          isCollapsed ? "justify-center" : "justify-between",
         )}
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="rounded-lg p-2 text-sidebar-foreground hover:bg-sidebar-accent"
-          aria-label={isCollapsed ? "Expandir menú" : "Colapsar menú"}
-        >
-          {isCollapsed ? <Menu className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
-        </button>
+      >
+        <div className={cn("flex items-center gap-3", isCollapsed && "gap-0")}>
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="flex h-10 w-10 items-center justify-center rounded-lg bg-sidebar text-sidebar-foreground transition-colors focus:outline-none focus:ring-0"
+            aria-label={isCollapsed ? "Expandir menú" : "Colapsar menú"}
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+          {!isCollapsed && (
+            <>
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
+                <Droplet className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <span className="text-lg font-semibold text-sidebar-foreground">LaundryPro</span>
+            </>
+          )}
+        </div>
       </div>
 
       <nav className="flex-1 space-y-1 p-4">
-        {navigation.map((item) => {
+        {laundryNavigation.map((item) => {
           const isActive = pathname === item.href
           return (
             <Link
@@ -73,6 +85,7 @@ export function LaundrySidebar() {
                 isActive
                   ? "bg-sidebar-primary text-sidebar-primary-foreground"
                   : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                isCollapsed && "justify-center px-0",
               )}
               title={isCollapsed ? item.name : undefined}
             >
@@ -85,9 +98,8 @@ export function LaundrySidebar() {
 
       <div className="border-t border-sidebar-border p-4">
         {!isCollapsed && (
-          <div className="mb-4 px-3">
-            <p className="text-xs text-muted-foreground mb-1">Lavandería</p>
-            <p className="text-sm font-medium">Clean & Fresh Laundry</p>
+          <div className="mb-4 px-3 space-y-1">
+            <p className="text-sm font-medium text-sidebar-foreground">Clean & Fresh Laundry</p>
             <p className="text-xs text-muted-foreground">lavanderia@cleanfresh.com</p>
           </div>
         )}

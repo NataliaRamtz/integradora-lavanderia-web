@@ -2,22 +2,31 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useState } from "react"
-import { LayoutDashboard, Users, Settings, Store, CreditCard, Ticket, ChevronLeft, Menu } from "lucide-react"
+import { useEffect, useState } from "react"
+import { LayoutDashboard, Users, Settings, Store, CreditCard, Menu, Droplet, LogOut } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
-const navigation = [
+export const adminNavigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Lavanderías", href: "/lavanderias", icon: Store },
   { name: "Gestión de Planes", href: "/planes", icon: CreditCard },
   { name: "Usuarios", href: "/usuarios", icon: Users },
-  { name: "Tickets", href: "/tickets", icon: Ticket },
+  { name: "Configuración", href: "/configuracion", icon: Settings },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
+    if (typeof window === "undefined") {
+      return false
+    }
+    return window.localStorage.getItem("admin-sidebar-collapsed") === "true"
+  })
+
+  useEffect(() => {
+    window.localStorage.setItem("admin-sidebar-collapsed", String(isCollapsed))
+  }, [isCollapsed])
 
   return (
     <div
@@ -26,40 +35,33 @@ export function Sidebar() {
         isCollapsed ? "w-16" : "w-64",
       )}
     >
-      <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-4">
-        {!isCollapsed && (
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-6 w-6 text-primary-foreground"
-              >
-                <path d="M3 6h18" />
-                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                <line x1="10" x2="10" y1="11" y2="17" />
-                <line x1="14" x2="14" y1="11" y2="17" />
-              </svg>
-            </div>
-            <span className="text-lg font-semibold text-sidebar-foreground">LaundryPro</span>
-          </div>
+      <div
+        className={cn(
+          "flex h-16 items-center border-b border-sidebar-border px-4 transition-all",
+          isCollapsed ? "justify-center" : "justify-between",
         )}
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="rounded-lg p-2 text-sidebar-foreground hover:bg-sidebar-accent"
-          aria-label={isCollapsed ? "Expandir menú" : "Colapsar menú"}
-        >
-          {isCollapsed ? <Menu className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
-        </button>
+      >
+        <div className={cn("flex items-center gap-3", isCollapsed && "gap-0")}>
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="flex h-10 w-10 items-center justify-center rounded-lg bg-sidebar text-sidebar-foreground transition-colors focus:outline-none focus:ring-0"
+            aria-label={isCollapsed ? "Expandir menú" : "Colapsar menú"}
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+          {!isCollapsed && (
+            <>
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
+                <Droplet className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <span className="text-lg font-semibold text-sidebar-foreground">LaundryPro</span>
+            </>
+          )}
+        </div>
       </div>
 
       <nav className="flex-1 space-y-1 p-4">
-        {navigation.map((item) => {
+        {adminNavigation.map((item) => {
           const isActive = pathname === item.href
           return (
             <Link
@@ -70,6 +72,7 @@ export function Sidebar() {
                 isActive
                   ? "bg-sidebar-primary text-sidebar-primary-foreground"
                   : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                isCollapsed && "justify-center px-0",
               )}
               title={isCollapsed ? item.name : undefined}
             >
@@ -81,13 +84,19 @@ export function Sidebar() {
       </nav>
 
       <div className="border-t border-sidebar-border p-4">
+        {!isCollapsed && (
+          <div className="mb-4 px-3 space-y-1">
+            <p className="text-sm font-medium text-sidebar-foreground">Superadmin</p>
+            <p className="text-xs text-muted-foreground">superadmin@laundrypro.com</p>
+          </div>
+        )}
         <Link
-          href="/configuracion"
+          href="/login"
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent"
-          title={isCollapsed ? "Configuración" : undefined}
+          title={isCollapsed ? "Cerrar sesión" : undefined}
         >
-          <Settings className="h-5 w-5 flex-shrink-0" />
-          {!isCollapsed && "Configuración"}
+          <LogOut className="h-5 w-5 flex-shrink-0" />
+          {!isCollapsed && "Cerrar Sesión"}
         </Link>
       </div>
     </div>
