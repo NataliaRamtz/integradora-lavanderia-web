@@ -1,39 +1,70 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import { useState, useTransition } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { ArrowLeft } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ArrowLeft } from "lucide-react"
+import { authService } from "@/src/modules/auth/application/auth.service"
+
+type FormState = {
+  email: string
+  password: string
+  confirmPassword: string
+  acceptTerms: boolean
+  laundryName: string
+}
 
 export default function RegisterPage() {
-  const [formData, setFormData] = useState({
-    name: "",
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [formData, setFormData] = useState<FormState>({
     email: "",
-    phone: "",
-    laundryName: "",
     password: "",
     confirmPassword: "",
     acceptTerms: false,
+    laundryName: "",
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const updateField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
+    setFormData((prev) => ({ ...prev, [key]: value }))
+  }
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setErrorMessage(null)
+
     if (formData.password !== formData.confirmPassword) {
-      alert("Las contraseñas no coinciden")
+      setErrorMessage("Las contraseñas no coinciden")
       return
     }
     if (!formData.acceptTerms) {
-      alert("Debes aceptar los términos y condiciones")
+      setErrorMessage("Debes aceptar los términos y condiciones")
       return
     }
-    console.log("[v0] Register attempt:", formData)
-    window.location.href = "/lavanderia/dashboard"
+
+    startTransition(async () => {
+      try {
+        await authService.signUpWithPassword({
+          email: formData.email,
+          password: formData.password,
+          laundryName: formData.laundryName,
+        })
+
+        router.replace("/login?signup=success")
+      } catch (error) {
+        console.error("Signup error", error)
+        const message =
+          error instanceof Error ? error.message : "No fue posible completar el registro. Intenta más tarde."
+        setErrorMessage(message)
+      }
+    })
   }
 
   return (
@@ -56,21 +87,11 @@ export default function RegisterPage() {
             </div>
           </div>
           <CardTitle className="text-2xl font-bold">Crear Cuenta en LaundryPro</CardTitle>
-          <CardDescription>Completa el formulario para registrar tu lavandería</CardDescription>
+          <CardDescription>Completa el formulario para solicitar acceso.</CardDescription>
         </CardHeader>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nombre Completo</Label>
-                <Input
-                  id="name"
-                  placeholder="Juan Pérez"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                />
-              </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Correo Electrónico</Label>
                 <Input
@@ -78,20 +99,7 @@ export default function RegisterPage() {
                   type="email"
                   placeholder="tu@email.com"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="phone">Teléfono</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+52 123 456 7890"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(event) => updateField("email", event.target.value)}
                   required
                 />
               </div>
@@ -99,9 +107,9 @@ export default function RegisterPage() {
                 <Label htmlFor="laundryName">Nombre de la Lavandería</Label>
                 <Input
                   id="laundryName"
-                  placeholder="Mi Lavandería"
+                  placeholder="Clean & Fresh"
                   value={formData.laundryName}
-                  onChange={(e) => setFormData({ ...formData, laundryName: e.target.value })}
+                  onChange={(event) => updateField("laundryName", event.target.value)}
                   required
                 />
               </div>
@@ -114,7 +122,7 @@ export default function RegisterPage() {
                   type="password"
                   placeholder="••••••••"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(event) => updateField("password", event.target.value)}
                   required
                 />
               </div>
@@ -125,7 +133,7 @@ export default function RegisterPage() {
                   type="password"
                   placeholder="••••••••"
                   value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  onChange={(event) => updateField("confirmPassword", event.target.value)}
                   required
                 />
               </div>
@@ -134,23 +142,27 @@ export default function RegisterPage() {
               <Checkbox
                 id="terms"
                 checked={formData.acceptTerms}
-                onCheckedChange={(checked) => setFormData({ ...formData, acceptTerms: checked as boolean })}
+                onCheckedChange={(checked) => updateField("acceptTerms", Boolean(checked))}
               />
               <Label htmlFor="terms" className="text-sm font-normal cursor-pointer leading-relaxed">
                 Acepto los{" "}
                 <Link href="/terminos" className="text-blue-600 hover:underline">
                   términos y condiciones
-                </Link>{" "}
-                y la{" "}
+                </Link>
+                {" "}y la{" "}
                 <Link href="/privacidad" className="text-blue-600 hover:underline">
                   política de privacidad
                 </Link>
               </Label>
             </div>
+            {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
+            <p className="text-xs text-muted-foreground">
+              Un administrador completará la asignación de rol y permisos una vez revisada la solicitud.
+            </p>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full">
-              Crear Cuenta
+            <Button type="submit" className="w-full" disabled={isPending}>
+              {isPending ? "Procesando..." : "Crear Cuenta"}
             </Button>
             <p className="text-sm text-center text-muted-foreground">
               ¿Ya tienes una cuenta?{" "}

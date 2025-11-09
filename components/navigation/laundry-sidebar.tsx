@@ -1,22 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useEffect, useState } from "react"
-import {
-  LayoutDashboard,
-  Package,
-  BarChart3,
-  Settings,
-  LogOut,
-  Ticket,
-  Menu,
-  Droplet,
-  UserPlus,
-  NotebookPen,
-} from "lucide-react"
+import { usePathname, useRouter } from "next/navigation"
+import { useEffect, useState, useTransition } from "react"
+import { LayoutDashboard, Package, BarChart3, Settings, LogOut, Ticket, Menu, Droplet, UserPlus, NotebookPen } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { authService } from "@/src/modules/auth/application/auth.service"
 
 export const laundryNavigation = [
   { name: "Dashboard", href: "/lavanderia/dashboard", icon: LayoutDashboard },
@@ -30,7 +20,9 @@ export const laundryNavigation = [
 
 export function LaundrySidebar() {
   const pathname = usePathname()
+  const router = useRouter()
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isLoggingOut, startLogout] = useTransition()
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -48,6 +40,17 @@ export function LaundrySidebar() {
     }
     window.localStorage.setItem("laundry-sidebar-collapsed", String(isCollapsed))
   }, [isCollapsed])
+
+  const handleLogout = () => {
+    startLogout(async () => {
+      try {
+        await authService.signOut()
+        router.replace("/login")
+      } catch (error) {
+        console.error("Error al cerrar sesión", error)
+      }
+    })
+  }
 
   return (
     <div
@@ -111,14 +114,15 @@ export function LaundrySidebar() {
             <p className="text-xs text-muted-foreground">lavanderia@cleanfresh.com</p>
           </div>
         )}
-        <Link
-          href="/"
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent"
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent disabled:opacity-60"
           title={isCollapsed ? "Cerrar Sesión" : undefined}
+          disabled={isLoggingOut}
         >
           <LogOut className="h-5 w-5 flex-shrink-0" />
           {!isCollapsed && "Cerrar Sesión"}
-        </Link>
+        </button>
       </div>
     </div>
   )

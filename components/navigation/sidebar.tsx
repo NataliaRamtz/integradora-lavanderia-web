@@ -1,11 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useEffect, useState } from "react"
+import { usePathname, useRouter } from "next/navigation"
+import { useEffect, useState, useTransition } from "react"
 import { LayoutDashboard, Users, Settings, Store, CreditCard, BarChart3, Menu, Droplet, LogOut } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { authService } from "@/src/modules/auth/application/auth.service"
 
 export const adminNavigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -18,7 +19,9 @@ export const adminNavigation = [
 
 export function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isLoggingOut, startLogout] = useTransition()
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -36,6 +39,17 @@ export function Sidebar() {
     }
     window.localStorage.setItem("admin-sidebar-collapsed", String(isCollapsed))
   }, [isCollapsed])
+
+  const handleLogout = () => {
+    startLogout(async () => {
+      try {
+        await authService.signOut()
+        router.replace("/login")
+      } catch (error) {
+        console.error("Error al cerrar sesión", error)
+      }
+    })
+  }
 
   return (
     <div
@@ -99,14 +113,15 @@ export function Sidebar() {
             <p className="text-xs text-muted-foreground">superadmin@laundrypro.com</p>
           </div>
         )}
-        <Link
-          href="/login"
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent"
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent disabled:opacity-60"
           title={isCollapsed ? "Cerrar sesión" : undefined}
+          disabled={isLoggingOut}
         >
           <LogOut className="h-5 w-5 flex-shrink-0" />
           {!isCollapsed && "Cerrar Sesión"}
-        </Link>
+        </button>
       </div>
     </div>
   )
