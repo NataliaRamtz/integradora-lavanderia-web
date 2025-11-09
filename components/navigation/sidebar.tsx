@@ -3,28 +3,37 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
-import { LayoutDashboard, Users, Settings, Store, CreditCard, Menu, Droplet, LogOut } from "lucide-react"
+import { LayoutDashboard, Users, Settings, Store, CreditCard, BarChart3, Menu, Droplet, LogOut } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
 export const adminNavigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Lavanderías", href: "/lavanderias", icon: Store },
-  { name: "Gestión de Planes", href: "/planes", icon: CreditCard },
   { name: "Usuarios", href: "/usuarios", icon: Users },
+  { name: "Gestión de Planes", href: "/planes", icon: CreditCard },
+  { name: "Estadísticas", href: "/estadisticas", icon: BarChart3 },
   { name: "Configuración", href: "/configuracion", icon: Settings },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
-  const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
-    if (typeof window === "undefined") {
-      return false
-    }
-    return window.localStorage.getItem("admin-sidebar-collapsed") === "true"
-  })
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   useEffect(() => {
+    if (typeof window === "undefined") {
+      return
+    }
+    const stored = window.localStorage.getItem("admin-sidebar-collapsed")
+    if (stored === "true") {
+      setIsCollapsed(true)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return
+    }
     window.localStorage.setItem("admin-sidebar-collapsed", String(isCollapsed))
   }, [isCollapsed])
 

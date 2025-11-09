@@ -30,14 +30,22 @@ export const laundryNavigation = [
 
 export function LaundrySidebar() {
   const pathname = usePathname()
-  const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
-    if (typeof window === "undefined") {
-      return false
-    }
-    return window.localStorage.getItem("laundry-sidebar-collapsed") === "true"
-  })
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   useEffect(() => {
+    if (typeof window === "undefined") {
+      return
+    }
+    const stored = window.localStorage.getItem("laundry-sidebar-collapsed")
+    if (stored === "true") {
+      setIsCollapsed(true)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return
+    }
     window.localStorage.setItem("laundry-sidebar-collapsed", String(isCollapsed))
   }, [isCollapsed])
 
