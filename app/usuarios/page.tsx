@@ -10,97 +10,40 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Search, Plus, Mail, Phone, Users as UsersIcon, ShieldCheck, Activity, Eye, PieChart } from "lucide-react"
 import MainLayout from "@/components/layouts/main-layout"
-
-const users = [
-  {
-    id: 1,
-    name: "Carlos Mendoza",
-    email: "carlos@example.com",
-    phone: "+1234567890",
-    role: "Operador",
-    laundry: "Lavandería Central",
-    status: "Activo",
-    avatar: "/abstract-geometric-shapes.png",
-    lastAccess: "2024-11-10 09:34",
-  },
-  {
-    id: 2,
-    name: "Elena Ramirez",
-    email: "elena@example.com",
-    phone: "+1234567891",
-    role: "Administrador",
-    laundry: "Lavado Rápido",
-    status: "Activo",
-    avatar: "/abstract-geometric-shapes.png",
-    lastAccess: "2024-11-09 19:20",
-  },
-  {
-    id: 3,
-    name: "Diego Silva",
-    email: "diego@example.com",
-    phone: "+1234567892",
-    role: "Operador",
-    laundry: "EcoClean",
-    status: "Inactivo",
-    avatar: "/abstract-geometric-shapes.png",
-    lastAccess: "2024-10-28 14:02",
-  },
-  {
-    id: 4,
-    name: "Sofia Vargas",
-    email: "sofia@example.com",
-    phone: "+1234567893",
-    role: "Supervisor",
-    laundry: "Quick Wash",
-    status: "Activo",
-    avatar: "/abstract-geometric-shapes.png",
-    lastAccess: "2024-11-10 07:51",
-  },
-  {
-    id: 5,
-    name: "Andrea Torres",
-    email: "andrea@example.com",
-    phone: "+1234567894",
-    role: "Operador",
-    laundry: "Clean & Fresh",
-    status: "Pendiente",
-    avatar: "/abstract-geometric-shapes.png",
-    lastAccess: "—",
-  },
-]
+import { adminUsers } from "@/lib/data/users"
 
 const monitoringHighlights = [
   {
     label: "Usuarios totales",
-    value: users.length,
+    value: adminUsers.length,
     helper: "+12% vs. mes pasado",
     icon: UsersIcon,
     accent: "bg-blue-100 text-blue-600",
   },
   {
     label: "Administradores",
-    value: users.filter((u) => u.role === "Administrador").length,
+    value: adminUsers.filter((u) => u.role === "Administrador").length,
     helper: "Control de cuentas privilegiadas",
     icon: ShieldCheck,
     accent: "bg-emerald-100 text-emerald-600",
   },
   {
     label: "Activos hoy",
-    value: users.filter((u) => u.status === "Activo").length,
+    value: adminUsers.filter((u) => u.status === "Activo").length,
     helper: "Usuarios con sesión en las últimas 24 h",
     icon: Activity,
     accent: "bg-purple-100 text-purple-600",
   },
   {
     label: "Pendientes",
-    value: users.filter((u) => u.status === "Pendiente").length,
+    value: adminUsers.filter((u) => u.status === "Pendiente").length,
     helper: "Invitaciones sin validar",
     icon: Eye,
     accent: "bg-amber-100 text-amber-600",
   },
 ]
 
-const roleLabels = ["Administrador", "Supervisor", "Operador"]
+const roleLabels = ["Administrador", "Supervisor", "Operador"] as const
 
 export default function UsuariosPage() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -108,18 +51,21 @@ export default function UsuariosPage() {
 
   const filteredUsers = useMemo(() => {
     if (!searchQuery.trim()) {
-      return users
+      return adminUsers
     }
     const query = searchQuery.toLowerCase()
-    return users.filter((user) =>
-      [user.name, user.email, user.phone, user.role].some((value) => value.toLowerCase().includes(query)),
+    return adminUsers.filter((user) =>
+      [user.name, user.email, user.phone, user.role, user.status]
+        .join("|")
+        .toLowerCase()
+        .includes(query),
     )
   }, [searchQuery])
 
   const roleDistribution = useMemo(() => {
-    const total = users.length
+    const total = adminUsers.length
     return roleLabels.map((role) => {
-      const count = users.filter((user) => user.role === role).length
+      const count = adminUsers.filter((user) => user.role === role).length
       return {
         role,
         count,
@@ -129,14 +75,14 @@ export default function UsuariosPage() {
   }, [])
 
   const statusDistribution = useMemo(() => {
-    const totals = users.reduce(
+    const totals = adminUsers.reduce(
       (acc, user) => {
         acc[user.status] = (acc[user.status] ?? 0) + 1
         return acc
       },
       {} as Record<string, number>,
     )
-    const total = users.length
+    const total = adminUsers.length
     return Object.entries(totals).map(([status, count]) => ({
       status,
       count,

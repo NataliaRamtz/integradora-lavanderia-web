@@ -10,81 +10,19 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Download } from "lucide-react"
 import {
-  Activity,
-  TrendingUp,
-  Users,
-  Store,
-  Building2,
-  PieChart,
-  LineChart,
-  Rocket,
-  HeartPulse,
-  Globe,
-  Database,
-} from "lucide-react"
-
-const kpiTiles = [
-  {
-    label: "Lavanderías registradas",
-    value: "58",
-    helper: "+12 vs. último trimestre",
-    icon: Store,
-    accent: "bg-blue-100 text-blue-600",
-    key: "laundries",
-  },
-  {
-    label: "Usuarios totales",
-    value: "7,820",
-    helper: "+640 en el mes",
-    icon: Users,
-    accent: "bg-purple-100 text-purple-600",
-    key: "users",
-  },
-  {
-    label: "Ticket promedio",
-    value: "$42.80",
-    helper: "Promedio global",
-    icon: TrendingUp,
-    accent: "bg-emerald-100 text-emerald-600",
-    key: "ticket",
-  },
-  {
-    label: "Pedidos procesados",
-    value: "92,413",
-    helper: "Acumulado histórico",
-    icon: Activity,
-    accent: "bg-orange-100 text-orange-600",
-    key: "orders",
-  },
-]
-
-const adoptionByRegion = [
-  { region: "CDMX", laundries: 21, growth: "+18%" },
-  { region: "Guadalajara", laundries: 12, growth: "+11%" },
-  { region: "Monterrey", laundries: 9, growth: "+7%" },
-  { region: "Querétaro", laundries: 6, growth: "+10%" },
-]
-
-const retentionMetrics = [
-  { label: "Retención 30 días", value: "88%" },
-  { label: "Retención 90 días", value: "81%" },
-  { label: "Churn mensual", value: "5.4%" },
-]
-
-const infrastructureStats = [
-  { label: "Transacciones diarias", value: "4,280", helper: "Promedio últimos 7 días" },
-  { label: "Eventos en tiempo real", value: "250k", helper: "Alertas y webhooks" },
-  { label: "Integraciones activas", value: "34", helper: "Servicios externos" },
-]
-
-const featureUsage = [
-  { feature: "Pedidos automatizados", usage: "72%", state: "Mayor adopción" },
-  { feature: "Generación de tickets", usage: "65%", state: "Crecimiento" },
-  { feature: "Planificación de rutas", usage: "41%", state: "Potencial" },
-]
+  analyticsKpiTiles,
+  analyticsAdoptionByRegion,
+  analyticsRetentionMetrics,
+  analyticsInfrastructureStats,
+  analyticsFeatureUsage,
+} from "@/lib/data/admin-analytics"
+import { HeartPulse, Globe } from "lucide-react"
 
 function downloadCSV(filename: string, rows: Record<string, unknown>[]) {
   const headers = Object.keys(rows[0] ?? {})
+  if (!headers.length) {
+    return
+  }
   const csvContent = [
     headers.join(","),
     ...rows.map((row) => headers.map((header) => JSON.stringify(row[header] ?? "")).join(",")),
@@ -105,7 +43,7 @@ export default function EstadisticasPage() {
   const [timeframe, setTimeframe] = useState("QTD")
   const [segment, setSegment] = useState("global")
 
-  const kpiRows = kpiTiles.map(({ label, value, helper, key }) => ({
+  const kpiRows = analyticsKpiTiles.map(({ label, value, helper, key }) => ({
     metric: label,
     valor: value,
     comentario: helper,
@@ -114,7 +52,7 @@ export default function EstadisticasPage() {
     segmento: segment,
   }))
 
-  const regionRows = adoptionByRegion.map((item) => ({ ...item, periodo: timeframe, segmento: segment }))
+  const regionRows = analyticsAdoptionByRegion.map((item) => ({ ...item, periodo: timeframe, segmento: segment }))
 
   return (
     <MainLayout title="Estadísticas Globales">
@@ -163,7 +101,7 @@ export default function EstadisticasPage() {
         </div>
 
         <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {kpiTiles.map((tile) => (
+          {analyticsKpiTiles.map((tile) => (
             <Card key={tile.label}>
               <CardContent className="pt-6">
                 <div className="flex items-start justify-between">
@@ -192,7 +130,7 @@ export default function EstadisticasPage() {
               <CardDescription>Comparativa de crecimiento {timeframe}.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {adoptionByRegion.map((item) => (
+              {analyticsAdoptionByRegion.map((item) => (
                 <div key={item.region} className="flex items-center justify-between rounded-lg border border-border bg-muted/40 p-4">
                   <div>
                     <p className="text-sm font-semibold text-foreground">{item.region}</p>
@@ -213,7 +151,7 @@ export default function EstadisticasPage() {
               <CardDescription>Seguimiento de usuarios y clientes corporativos.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3">
-              {retentionMetrics.map((metric) => (
+              {analyticsRetentionMetrics.map((metric) => (
                 <div key={metric.label} className="flex items-center justify-between rounded-lg border border-border bg-background p-4">
                   <p className="text-sm text-muted-foreground">{metric.label}</p>
                   <p className="text-2xl font-semibold text-foreground">{metric.value}</p>
@@ -238,7 +176,7 @@ export default function EstadisticasPage() {
               <CardDescription>Características más utilizadas por las lavanderías activas.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {featureUsage.map((feature) => (
+              {analyticsFeatureUsage.map((feature) => (
                 <div key={feature.feature} className="rounded-lg border border-border bg-muted/30 p-4">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium text-foreground">{feature.feature}</p>
@@ -259,7 +197,7 @@ export default function EstadisticasPage() {
               <CardDescription>Visibilidad de la infraestructura global.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {infrastructureStats.map((stat) => (
+              {analyticsInfrastructureStats.map((stat) => (
                 <div key={stat.label} className="rounded-lg border border-border bg-background p-4">
                   <p className="text-xs uppercase text-muted-foreground">{stat.label}</p>
                   <p className="mt-2 text-2xl font-semibold text-foreground">{stat.value}</p>
