@@ -1,8 +1,9 @@
 'use client';
 
-import { useDeferredValue, useState } from 'react';
+import { useDeferredValue, useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Search, ChevronDown, Plus } from 'lucide-react';
+import { Search, ChevronDown, Plus, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useSession } from '@/features/auth/session-context';
@@ -41,13 +42,27 @@ const estadosOptions: Array<{ value: PedidoEstado | 'todos'; label: string }> = 
   { value: 'cancelado', label: 'Cancelados' },
 ];
 
-export default function PedidosPage() {
+function PedidosPageContent() {
   const { activeRole } = useSession();
   const lavanderiaId = activeRole?.lavanderia_id ?? '';
+  const searchParams = useSearchParams();
 
   const [search, setSearch] = useState('');
-  const [estado, setEstado] = useState<PedidoEstado | 'todos'>('todos');
+  const [estado, setEstado] = useState<PedidoEstado | 'todos'>(() => {
+    const estadoParam = searchParams.get('estado');
+    if (estadoParam && ['creado', 'en_proceso', 'listo', 'entregado', 'cancelado'].includes(estadoParam)) {
+      return estadoParam as PedidoEstado;
+    }
+    return 'todos';
+  });
   const deferredSearch = useDeferredValue(search);
+
+  useEffect(() => {
+    const estadoParam = searchParams.get('estado');
+    if (estadoParam && ['creado', 'en_proceso', 'listo', 'entregado', 'cancelado'].includes(estadoParam)) {
+      setEstado(estadoParam as PedidoEstado);
+    }
+  }, [searchParams]);
 
   const pedidosQuery = usePedidosList(lavanderiaId, {
     estado,
@@ -175,6 +190,22 @@ function PedidoCard({ pedido }: PedidoCardProps) {
         </Button>
       </div>
     </article>
+  );
+}
+
+export default function PedidosPage() {
+  return (
+    <Suspense
+      fallback={
+        <section className="space-y-6">
+          <div className="flex items-center justify-center rounded-3xl border border-white/10 bg-slate-900/60 py-20 text-slate-400">
+            <Loader2 className="mr-3 h-5 w-5 animate-spin" /> Cargando pedidos…
+          </div>
+        </section>
+      }
+    >
+      <PedidosPageContent />
+    </Suspense>
   );
 }
 

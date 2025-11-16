@@ -146,6 +146,44 @@ export const fetchAdminDashboardMetrics = async (): Promise<AdminDashboardMetric
   const retention30dPct = activeUsers > 0 ? (retentionUsers / activeUsers) * 100 : 0;
   const retention90dPct = activeUsers > 0 ? (retention90Users / activeUsers) * 100 : 0;
 
+  // Obtener datos de planes desde la BD
+  const { data: lavanderiasData } = await supabase
+    .from('lavanderias')
+    .select('config');
+
+  const planCounts = {
+    Freemium: 0,
+    Suscripción: 0,
+    Comisión: 0,
+  };
+
+  if (lavanderiasData) {
+    lavanderiasData.forEach((lav) => {
+      if (lav.config && typeof lav.config === 'object') {
+        const config = lav.config as Record<string, unknown>;
+        const plan = config.plan as string | undefined;
+        if (plan === 'freemium' || plan === 'Freemium') {
+          planCounts.Freemium++;
+        } else if (plan === 'suscripcion' || plan === 'Suscripción' || plan === 'subscription') {
+          planCounts.Suscripción++;
+        } else if (plan === 'comision' || plan === 'Comisión' || plan === 'commission') {
+          planCounts.Comisión++;
+        } else {
+          // Por defecto, si no tiene plan definido, es Freemium
+          planCounts.Freemium++;
+        }
+      } else {
+        // Si no tiene config, es Freemium por defecto
+        planCounts.Freemium++;
+      }
+    });
+  }
+
+  const totalPlans = planCounts.Freemium + planCounts.Suscripción + planCounts.Comisión;
+  const freemiumPct = totalPlans > 0 ? (planCounts.Freemium / totalPlans) * 100 : 0;
+  const suscripcionPct = totalPlans > 0 ? (planCounts.Suscripción / totalPlans) * 100 : 0;
+  const comisionPct = totalPlans > 0 ? (planCounts.Comisión / totalPlans) * 100 : 0;
+
   return {
     activeLaundries,
     laundriesGrowthPct,
@@ -157,9 +195,9 @@ export const fetchAdminDashboardMetrics = async (): Promise<AdminDashboardMetric
     retention90dPct,
     retentionTrendPct: revenueGrowthPct,
     planSnapshot: [
-      { name: 'Freemium', accounts: 0, conversionPct: 0 },
-      { name: 'Suscripción', accounts: 0, conversionPct: 0 },
-      { name: 'Comisión', accounts: 0, conversionPct: 0 },
+      { name: 'Freemium', accounts: planCounts.Freemium, conversionPct: freemiumPct },
+      { name: 'Suscripción', accounts: planCounts.Suscripción, conversionPct: suscripcionPct },
+      { name: 'Comisión', accounts: planCounts.Comisión, conversionPct: comisionPct },
     ],
     productEngagement: {
       conversionRatePct: 0,

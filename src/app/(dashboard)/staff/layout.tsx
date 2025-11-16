@@ -11,13 +11,14 @@ import {
   MenuSquare,
   Package2,
   Settings,
-  Sparkles,
+  Shirt,
   Ticket,
   Tag,
 } from "lucide-react";
 import { ProtectedShell } from "@/features/auth/components/protected-shell";
 import { useSession } from "@/features/auth/session-context";
 import { useLavanderia } from "@/features/lavanderias/queries";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const navigation = [
   { label: "Dashboard", href: "/staff", icon: LayoutDashboard },
@@ -117,15 +118,15 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
 
   return (
     <ProtectedShell requiredRoles={["encargado", "superadmin"]} fallbackRoute="/login">
-      <div className="flex min-h-svh bg-slate-950 text-slate-50">
-        <aside className="flex w-64 flex-col border-r border-white/10 bg-slate-950/95">
+      <div className="flex min-h-svh bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50">
+        <aside className="flex w-64 flex-col border-r border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950/95 fixed left-0 top-0 bottom-0">
           <div className="flex items-center gap-3 px-6 py-6">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-500/20 text-sky-300">
-              <Sparkles className="h-6 w-6" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-500/20 text-sky-600 dark:text-sky-300">
+              <Shirt className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-lg font-semibold">LaundryPro</p>
-              <p className="text-xs text-slate-400">Operaciones staff</p>
+              <p className="text-lg font-semibold text-slate-900 dark:text-white">LaundryPro</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400">Operaciones staff</p>
             </div>
           </div>
 
@@ -139,56 +140,43 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
                   href={item.href}
                   className={`group flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition ${
                     active
-                      ? "bg-sky-500/20 text-sky-200"
-                      : "text-slate-400 hover:bg-slate-900/80 hover:text-slate-100"
+                      ? "bg-sky-500/20 text-sky-700 dark:text-sky-200"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900/80 hover:text-slate-900 dark:hover:text-slate-100"
                   }`}
                 >
-                  <Icon className={`h-4 w-4 ${active ? "text-sky-300" : "text-slate-500 group-hover:text-slate-200"}`} />
+                  <Icon className={`h-4 w-4 ${active ? "text-sky-600 dark:text-sky-300" : "text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-200"}`} />
                   {item.label}
                 </Link>
               );
             })}
           </nav>
 
-          <div className="px-4 py-6">
-            <div className="rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3">
-              <p className="text-sm font-semibold text-slate-100">{lavanderia?.nombre ?? "Lavandería"}</p>
-              <p className="text-xs text-slate-400">{user?.email ?? "correo@laundry.pro"}</p>
-            </div>
-
-            <div className="mt-4 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-500/15 text-sm font-semibold text-sky-200">
-                {initials}
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-slate-100">{fullName}</p>
-                <button
-                  type="button"
-                  onClick={handleSignOut}
-                  className="flex items-center gap-2 text-xs font-medium text-rose-300 transition hover:text-rose-200"
-                >
-                  <LogOut className="h-3.5 w-3.5" />
-                  Cerrar sesión
-                </button>
-              </div>
-            </div>
+          <div className="px-4 py-6 mt-auto">
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="w-full flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-rose-600 dark:text-rose-400 transition hover:bg-slate-100 dark:hover:bg-slate-900/80 hover:text-rose-700 dark:hover:text-rose-300"
+            >
+              <LogOut className="h-4 w-4" />
+              Cerrar sesión
+            </button>
           </div>
         </aside>
 
-        <div className="flex flex-1 flex-col">
-          <header className="border-b border-white/10 bg-slate-950/80 backdrop-blur">
+        <div className="flex flex-1 flex-col ml-64">
+          <header className="border-b border-slate-200 dark:border-white/10 bg-white/80 dark:bg-slate-950/80 backdrop-blur">
             <div className="flex items-center justify-between px-8 py-6">
               <div>
-                <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-xs text-slate-400">
+                <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-400">
                   {breadcrumbItems.map((item, index) => (
                     <div key={`${item.href}-${item.label}`} className="flex items-center gap-1">
-                      {index > 0 ? <ChevronRight className="h-3 w-3 text-slate-600" /> : null}
+                      {index > 0 ? <ChevronRight className="h-3 w-3 text-slate-400 dark:text-slate-600" /> : null}
                       {item.isCurrent ? (
-                        <span className="font-medium text-slate-200">{item.label}</span>
+                        <span className="font-medium text-slate-900 dark:text-slate-200">{item.label}</span>
                       ) : (
                         <Link
                           href={item.href}
-                          className="transition hover:text-slate-200"
+                          className="transition hover:text-slate-900 dark:hover:text-slate-200"
                         >
                           {item.label}
                         </Link>
@@ -196,16 +184,22 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
                     </div>
                   ))}
                 </nav>
-                <h1 className="text-2xl font-semibold text-slate-50">{currentSectionTitle}</h1>
+                <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-50">{currentSectionTitle}</h1>
               </div>
-              <div className="text-right text-xs text-slate-400">
-                <p className="text-sm font-semibold text-slate-100">{lavanderia?.nombre ?? "Lavandería"}</p>
-                <p>Operación diaria</p>
+              <div className="flex items-center gap-3">
+                <ThemeToggle />
+                <div className="text-right">
+                  <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{fullName}</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">{user?.email ?? 'correo@laundry.pro'}</p>
+                </div>
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-500/15 text-sm font-semibold text-sky-700 dark:text-sky-200">
+                  {initials}
+                </div>
               </div>
             </div>
           </header>
 
-          <main className="flex-1 overflow-y-auto bg-slate-950 px-8 py-10">
+          <main className="flex-1 overflow-y-auto bg-white dark:bg-slate-950 px-8 py-10">
             {children}
           </main>
         </div>

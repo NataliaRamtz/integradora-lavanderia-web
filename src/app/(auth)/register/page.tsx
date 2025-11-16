@@ -5,12 +5,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Building2, CheckCircle2, Loader2, Lock, Mail, Phone, Sparkles, User } from 'lucide-react';
+import { Building2, CheckCircle2, Loader2, Lock, Mail, Phone, Shirt, User } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { getBrowserClient } from '@/lib/supabase';
 import { registerSchema, type RegisterInput } from './schema';
 
@@ -111,48 +112,31 @@ export default function RegisterPage() {
 
   return (
     <div className="flex min-h-svh bg-slate-950 text-slate-100">
-      <aside className="hidden w-1/2 flex-col justify-between border-r border-white/10 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-12 py-14 xl:flex">
-        <div className="flex items-center gap-3 text-slate-100">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/20 text-sky-300">
-            <Sparkles className="h-6 w-6" />
+      <aside className="hidden w-1/2 flex-col justify-center items-center border-r border-white/10 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-12 py-14 xl:flex">
+        <div className="flex flex-col items-center justify-center space-y-6">
+          <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-sky-500/20 text-sky-300">
+            <Shirt className="h-16 w-16" />
           </div>
-          <div>
-            <p className="text-xl font-semibold">LaundryPro</p>
-            <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Staff Platform</p>
+          <div className="text-center">
+            <p className="text-2xl font-semibold text-slate-100 mb-2">LaundryPro</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Ropa limpia, gestión inteligente</p>
           </div>
-        </div>
-
-        <div className="space-y-6">
-          <h2 className="text-3xl font-semibold text-slate-100">
-            Crea el espacio digital de tu lavandería.
-          </h2>
-          <p className="text-sm text-slate-400">
-            Controla pedidos, clientes walk-in y catálogos de servicio desde un panel diseñado para encargados.
-          </p>
-
-          <div className="grid gap-4 text-sm text-slate-300">
-            <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-slate-900/60 p-4">
-              <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-400" />
-              <div>
-                <p className="font-medium text-slate-200">Onboarding guiado</p>
-                <p className="text-slate-400">Conecta tu catálogo y pedidos en minutos.</p>
+          <div className="w-full max-w-sm">
+            <div className="relative aspect-square bg-gradient-to-br from-sky-500/20 to-blue-500/20 rounded-3xl border border-sky-500/30 flex items-center justify-center overflow-hidden">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Shirt className="h-32 w-32 text-sky-400/40" />
               </div>
-            </div>
-            <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-slate-900/60 p-4">
-              <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-400" />
-              <div>
-                <p className="font-medium text-slate-200">Enfoque omnicanal</p>
-                <p className="text-slate-400">Gestiona pedidos móviles y walk-in desde el mismo dashboard.</p>
-              </div>
+              <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-sky-500/30 to-transparent"></div>
             </div>
           </div>
         </div>
-
-        <p className="text-xs text-slate-500">¿Ya tienes cuenta? <Link href="/login" className="text-sky-300">Inicia sesión</Link></p>
       </aside>
 
       <main className="flex flex-1 items-center justify-center px-6 py-12 sm:px-12">
         <div className="w-full max-w-2xl">
+          <div className="mb-4 flex justify-end">
+            <ThemeToggle />
+          </div>
           <Card className="border-white/10 bg-slate-900/80 shadow-2xl">
             <CardHeader className="space-y-3 text-center">
               <CardTitle className="text-3xl font-semibold text-slate-100">Crea tu cuenta</CardTitle>
@@ -292,7 +276,7 @@ export default function RegisterPage() {
                   className="w-full bg-sky-500 text-white hover:bg-sky-600"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                  {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Shirt className="mr-2 h-4 w-4" />}
                   Crear mi lavandería
                 </Button>
 

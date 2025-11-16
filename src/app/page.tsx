@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { Sparkles, ArrowRight, BarChart3, Users, TrendingUp, Zap, Shield, CheckCircle2 } from 'lucide-react';
+import { Sparkles, ArrowRight, BarChart3, Users, TrendingUp, Zap, Shield, CheckCircle2, Shirt } from 'lucide-react';
 import { createSupabaseServerClient } from '@/lib/supabase/server-client';
 import type { Database } from '@/lib/supabase/database.types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 export default async function HomePage() {
   const supabase = await createSupabaseServerClient();
@@ -29,7 +30,7 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-50">
+    <div className="min-h-screen dark:bg-gradient-to-b dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:text-slate-50 text-slate-900 transition-colors duration-300">
       <Header />
       <Hero />
       <Features />
@@ -41,26 +42,27 @@ export default async function HomePage() {
 }
 
 const Header = () => (
-  <header className="border-b border-slate-800 bg-slate-950/85 backdrop-blur supports-[backdrop-filter]:bg-slate-950/60">
+  <header className="border-b dark:border-slate-800 border-slate-200 dark:bg-slate-950/85 bg-white/95 backdrop-blur transition-colors duration-300">
     <div className="container mx-auto flex h-16 items-center justify-between px-4">
       <div className="flex items-center gap-2">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-500 shadow-lg shadow-sky-500/40">
-          <Sparkles className="h-5 w-5 text-white" />
+          <Shirt className="h-5 w-5 text-white" />
         </div>
-        <span className="text-xl font-bold tracking-tight">LaundryPro</span>
+        <span className="text-xl font-bold tracking-tight dark:text-slate-50 text-slate-900">LaundryPro</span>
       </div>
       <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
-        <Link href="#features" className="text-slate-400 transition hover:text-slate-100">
+        <Link href="#features" className="dark:text-slate-400 text-slate-600 transition hover:text-slate-100 dark:hover:text-slate-100 hover:text-slate-900">
           Características
         </Link>
-        <Link href="#pricing" className="text-slate-400 transition hover:text-slate-100">
+        <Link href="#pricing" className="dark:text-slate-400 text-slate-600 transition hover:text-slate-100 dark:hover:text-slate-100 hover:text-slate-900">
           Planes
         </Link>
-        <Link href="#about" className="text-slate-400 transition hover:text-slate-100">
+        <Link href="#about" className="dark:text-slate-400 text-slate-600 transition hover:text-slate-100 dark:hover:text-slate-100 hover:text-slate-900">
           Nosotros
         </Link>
       </nav>
       <div className="flex items-center gap-3">
+        <ThemeToggle />
         <Button variant="ghost" asChild>
           <Link href="/login">Iniciar sesión</Link>
         </Button>
@@ -74,13 +76,10 @@ const Header = () => (
 
 const Hero = () => (
   <section className="container mx-auto px-4 py-20 text-center">
-    <Badge className="mb-4 border border-sky-500/50 bg-sky-500/10 text-sky-300 hover:bg-sky-500/20">
-      Plataforma de gestión inteligente
-    </Badge>
-    <h1 className="mb-6 text-balance text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+    <h1 className="mb-6 text-balance text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl md:text-6xl lg:text-7xl text-slate-50 dark:text-slate-50 text-slate-900">
       Gestiona tu lavandería
       <br />
-      <span className="text-sky-400">con precisión y pasión</span>
+      <span className="text-sky-400 dark:text-sky-400 text-sky-600">con precisión y pasión</span>
     </h1>
     <p className="mx-auto mb-10 max-w-2xl text-lg text-slate-300 sm:text-xl">
       LaundryPro centraliza pedidos, clientes, servicios y reportes para que tu negocio crezca con datos confiables y
@@ -211,17 +210,17 @@ const Cta = () => (
 );
 
 const Footer = () => (
-  <footer id="about" className="border-t border-slate-800 bg-slate-950/90">
+  <footer id="about" className="border-t border-slate-800 dark:border-slate-800 border-slate-200 bg-slate-950/90 dark:bg-slate-950/90 bg-white/95">
     <div className="container mx-auto px-4 py-12">
       <div className="grid gap-8 md:grid-cols-4">
         <div>
           <div className="mb-4 flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-500">
-              <Sparkles className="h-5 w-5 text-white" />
+              <Shirt className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold">LaundryPro</span>
+            <span className="text-xl font-bold text-slate-50 dark:text-slate-50 text-slate-900">LaundryPro</span>
           </div>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-slate-400 dark:text-slate-400 text-slate-600">
             Creamos herramientas enfocadas en resolver los retos reales de las lavanderías modernas.
           </p>
         </div>
@@ -236,20 +235,20 @@ const Footer = () => (
         <FooterColumn
           title="Compañía"
           links={[
-            { label: 'Nosotros', href: '#about' },
+            { label: 'Nosotros', href: '/informacion#nosotros' },
             { label: 'Blog', href: '#' },
-            { label: 'Contacto', href: '#' },
+            { label: 'Contacto', href: '/informacion#contacto' },
           ]}
         />
         <FooterColumn
           title="Legal"
           links={[
-            { label: 'Privacidad', href: '#' },
-            { label: 'Términos', href: '#' },
+            { label: 'Privacidad', href: '/informacion#privacidad' },
+            { label: 'Términos', href: '/informacion#terminos' },
           ]}
         />
       </div>
-      <div className="mt-10 border-t border-slate-800 pt-6 text-center text-sm text-slate-500">
+      <div className="mt-10 border-t border-slate-800 dark:border-slate-800 border-slate-200 pt-6 text-center text-sm text-slate-500 dark:text-slate-500 text-slate-600">
         © {new Date().getFullYear()} LaundryPro. Todos los derechos reservados.
       </div>
     </div>
@@ -263,11 +262,11 @@ type FooterColumnProps = {
 
 const FooterColumn = ({ title, links }: FooterColumnProps) => (
   <div>
-    <h4 className="mb-4 font-semibold text-slate-100">{title}</h4>
-    <ul className="space-y-2 text-sm text-slate-400">
+    <h4 className="mb-4 font-semibold text-slate-100 dark:text-slate-100 text-slate-900">{title}</h4>
+    <ul className="space-y-2 text-sm text-slate-400 dark:text-slate-400 text-slate-600">
       {links.map((link) => (
         <li key={link.label}>
-          <Link href={link.href} className="transition hover:text-slate-100">
+          <Link href={link.href} className="transition hover:text-slate-100 dark:hover:text-slate-100 hover:text-slate-900">
             {link.label}
           </Link>
         </li>

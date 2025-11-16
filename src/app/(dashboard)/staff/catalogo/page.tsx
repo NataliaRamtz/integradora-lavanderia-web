@@ -180,6 +180,77 @@ export default function CatalogoPage() {
         </p>
       </header>
 
+      <section className="space-y-4">
+        <header className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-slate-100">Servicios actuales</h2>
+          <p className="text-sm text-slate-400">Total: {servicios?.length ?? 0}</p>
+        </header>
+
+        {isLoading ? (
+          <div className="rounded-3xl border border-white/10 bg-slate-900/60 px-6 py-10 text-center text-sm text-slate-400">
+            Cargando servicios…
+          </div>
+        ) : sortedServicios.length === 0 ? (
+          <div className="rounded-3xl border border-dashed border-white/10 bg-slate-900/60 px-6 py-10 text-center text-sm text-slate-400">
+            Aún no tienes servicios registrados.
+          </div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2">
+            {sortedServicios.map((servicio) => (
+              <article
+                key={servicio.id}
+                className="flex flex-col gap-4 rounded-3xl border border-white/10 bg-slate-900/70 p-5"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-100">{servicio.nombre}</h3>
+                    <p className="text-sm text-slate-400">
+                      {currencyFormatter.format(servicio.precio)}
+                      {servicio.unidad ? ` / ${servicio.unidad}` : ''}
+                    </p>
+                  </div>
+                  <BadgeEstado activo={servicio.activo} />
+                </div>
+
+                {servicio.descripcion ? (
+                  <p className="text-sm text-slate-400">{servicio.descripcion}</p>
+                ) : null}
+                <div className="grid gap-1 text-xs text-slate-500">
+                  {servicio.categoria ? <p>Categoría: {servicio.categoria}</p> : null}
+                  {servicio.orden ? <p>Orden: {servicio.orden}</p> : null}
+                  {servicio.createdAt ? (
+                    <p>
+                      Creado: {new Date(servicio.createdAt).toLocaleDateString('es-MX', { dateStyle: 'medium' })}
+                    </p>
+                  ) : null}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    variant="outline"
+                    className="border-slate-700 bg-transparent text-xs text-slate-300"
+                    onClick={() => handleEdit(servicio.id)}
+                  >
+                    <Pencil className="mr-2 h-3.5 w-3.5" /> Editar
+                  </Button>
+                  <Button
+                    type="button"
+                    className={`text-xs ${servicio.activo ? 'bg-rose-500 hover:bg-rose-600' : 'bg-emerald-500 hover:bg-emerald-600'}`}
+                    onClick={() => handleToggleActivo(servicio.id, !servicio.activo)}
+                    disabled={toggleServicioMutation.isPending}
+                  >
+                    {toggleServicioMutation.isPending ? (
+                      <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                    ) : null}
+                    {servicio.activo ? 'Desactivar' : 'Activar'}
+                  </Button>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
       <form onSubmit={handleSubmit} className="space-y-5 rounded-3xl border border-white/10 bg-slate-900/70 p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-slate-100">
@@ -308,77 +379,6 @@ export default function CatalogoPage() {
           </Button>
         </div>
       </form>
-
-      <section className="space-y-4">
-        <header className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-slate-100">Servicios actuales</h2>
-          <p className="text-sm text-slate-400">Total: {servicios?.length ?? 0}</p>
-        </header>
-
-        {isLoading ? (
-          <div className="rounded-3xl border border-white/10 bg-slate-900/60 px-6 py-10 text-center text-sm text-slate-400">
-            Cargando servicios…
-          </div>
-        ) : sortedServicios.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-white/10 bg-slate-900/60 px-6 py-10 text-center text-sm text-slate-400">
-            Aún no tienes servicios registrados.
-          </div>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2">
-            {sortedServicios.map((servicio) => (
-              <article
-                key={servicio.id}
-                className="flex flex-col gap-4 rounded-3xl border border-white/10 bg-slate-900/70 p-5"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-100">{servicio.nombre}</h3>
-                    <p className="text-sm text-slate-400">
-                      {currencyFormatter.format(servicio.precio)}
-                      {servicio.unidad ? ` / ${servicio.unidad}` : ''}
-                    </p>
-                  </div>
-                  <BadgeEstado activo={servicio.activo} />
-                </div>
-
-                {servicio.descripcion ? (
-                  <p className="text-sm text-slate-400">{servicio.descripcion}</p>
-                ) : null}
-                <div className="grid gap-1 text-xs text-slate-500">
-                  {servicio.categoria ? <p>Categoría: {servicio.categoria}</p> : null}
-                  {servicio.orden ? <p>Orden: {servicio.orden}</p> : null}
-                  {servicio.createdAt ? (
-                    <p>
-                      Creado: {new Date(servicio.createdAt).toLocaleDateString('es-MX', { dateStyle: 'medium' })}
-                    </p>
-                  ) : null}
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <Button
-                    variant="outline"
-                    className="border-slate-700 bg-transparent text-xs text-slate-300"
-                    onClick={() => handleEdit(servicio.id)}
-                  >
-                    <Pencil className="mr-2 h-3.5 w-3.5" /> Editar
-                  </Button>
-                  <Button
-                    type="button"
-                    className={`text-xs ${servicio.activo ? 'bg-rose-500 hover:bg-rose-600' : 'bg-emerald-500 hover:bg-emerald-600'}`}
-                    onClick={() => handleToggleActivo(servicio.id, !servicio.activo)}
-                    disabled={toggleServicioMutation.isPending}
-                  >
-                    {toggleServicioMutation.isPending ? (
-                      <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
-                    ) : null}
-                    {servicio.activo ? 'Desactivar' : 'Activar'}
-                  </Button>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
-      </section>
     </section>
   );
 }

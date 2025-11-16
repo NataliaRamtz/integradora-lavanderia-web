@@ -217,18 +217,19 @@ export default function WalkInPage() {
                       <Button
                         type="button"
                         variant="outline"
-                        className="h-8 w-8 border-slate-700 bg-transparent text-slate-300"
+                        className="h-10 w-10 border-2 border-slate-600 dark:border-slate-600 border-slate-300 bg-transparent text-slate-300 dark:text-slate-300 text-slate-700 hover:bg-slate-800 dark:hover:bg-slate-800 hover:bg-slate-100"
                         onClick={() => handleCantidad(servicio.id, -1)}
+                        disabled={cantidad === 0}
                       >
-                        <Minus className="h-4 w-4" />
+                        <Minus className="h-5 w-5" />
                       </Button>
-                      <span className="w-10 text-center text-sm font-semibold text-slate-100">{cantidad}</span>
+                      <span className="w-12 text-center text-base font-bold text-slate-100 dark:text-slate-100 text-slate-900">{cantidad}</span>
                       <Button
                         type="button"
-                        className="h-8 w-8 bg-sky-500 text-white hover:bg-sky-600"
+                        className="h-10 w-10 bg-sky-500 text-white hover:bg-sky-600 border-2 border-sky-500"
                         onClick={() => handleCantidad(servicio.id, 1)}
                       >
-                        <Plus className="h-4 w-4" />
+                        <Plus className="h-5 w-5" />
                       </Button>
                     </div>
                   </div>
