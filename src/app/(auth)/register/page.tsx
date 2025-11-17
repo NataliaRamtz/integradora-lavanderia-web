@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Building2, CheckCircle2, Loader2, Lock, Mail, Phone, Shirt, User } from 'lucide-react';
+import { Building2, CheckCircle2, Loader2, Lock, Mail, Phone, Shirt, User, Eye, EyeOff } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,6 +26,8 @@ export default function RegisterPage() {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const form = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
@@ -111,36 +113,29 @@ export default function RegisterPage() {
   });
 
   return (
-    <div className="flex min-h-svh bg-slate-950 text-slate-100">
-      <aside className="hidden w-1/2 flex-col justify-center items-center border-r border-white/10 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-12 py-14 xl:flex">
-        <div className="flex flex-col items-center justify-center space-y-6">
-          <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-sky-500/20 text-sky-300">
-            <Shirt className="h-16 w-16" />
-          </div>
-          <div className="text-center">
-            <p className="text-2xl font-semibold text-slate-100 mb-2">LaundryPro</p>
-            <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Ropa limpia, gestión inteligente</p>
-          </div>
-          <div className="w-full max-w-sm">
-            <div className="relative aspect-square bg-gradient-to-br from-sky-500/20 to-blue-500/20 rounded-3xl border border-sky-500/30 flex items-center justify-center overflow-hidden">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Shirt className="h-32 w-32 text-sky-400/40" />
-              </div>
-              <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-sky-500/30 to-transparent"></div>
-            </div>
-          </div>
-        </div>
+    <div className="flex min-h-svh bg-gradient-to-br from-white via-slate-50 to-white text-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-slate-100">
+      <aside 
+        className="hidden w-2/5 flex-col items-center justify-center border-r border-slate-200 dark:border-white/10 lg:flex"
+        style={{
+          backgroundImage: 'url(/images/login.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
       </aside>
 
       <main className="flex flex-1 items-center justify-center px-6 py-12 sm:px-12">
         <div className="w-full max-w-2xl">
-          <div className="mb-4 flex justify-end">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <Button variant="ghost" size="sm" asChild className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-50">
+              <Link href="/">← Volver</Link>
+            </Button>
             <ThemeToggle />
           </div>
-          <Card className="border-white/10 bg-slate-900/80 shadow-2xl">
+          <Card className="border border-slate-200 bg-white/90 shadow-2xl dark:border-white/10 dark:bg-slate-900/80">
             <CardHeader className="space-y-3 text-center">
-              <CardTitle className="text-3xl font-semibold text-slate-100">Crea tu cuenta</CardTitle>
-              <p className="text-sm text-slate-400">
+              <CardTitle className="text-3xl font-semibold text-slate-900 dark:text-slate-100">Crea tu cuenta</CardTitle>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
                 Registra tu lavandería y obtén acceso inmediato al panel de encargados.
               </p>
             </CardHeader>
@@ -212,13 +207,27 @@ export default function RegisterPage() {
                     error={form.formState.errors.password?.message}
                     htmlFor="password"
                   >
-                    <Input
-                      id="password"
-                      type="password"
-                      autoComplete="new-password"
-                      placeholder="Crea una contraseña"
-                      {...form.register('password')}
-                    />
+                    <div className="space-y-1">
+                      <div className="relative">
+                        <Input
+                          id="password"
+                          type={showPassword ? 'text' : 'password'}
+                          autoComplete="new-password"
+                          placeholder="Mínimo 8 caracteres"
+                          className="pr-12"
+                          {...form.register('password')}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
+                          aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                        >
+                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Tu contraseña debe tener al menos 8 caracteres.</p>
+                    </div>
                   </FieldGroup>
 
                   <FieldGroup
@@ -227,13 +236,24 @@ export default function RegisterPage() {
                     error={form.formState.errors.confirmPassword?.message}
                     htmlFor="confirmPassword"
                   >
-                    <Input
-                      id="confirmPassword"
-                      type="password"
-                      autoComplete="new-password"
-                      placeholder="Repite la contraseña"
-                      {...form.register('confirmPassword')}
-                    />
+                    <div className="relative">
+                      <Input
+                        id="confirmPassword"
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        autoComplete="new-password"
+                        placeholder="Repite la contraseña"
+                        className="pr-12"
+                        {...form.register('confirmPassword')}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword((prev) => !prev)}
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
+                        aria-label={showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                      >
+                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
                   </FieldGroup>
                 </div>
 
@@ -250,23 +270,34 @@ export default function RegisterPage() {
                   />
                 </FieldGroup>
 
-                <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm">
+                <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm dark:border-white/10 dark:bg-slate-950/60">
+                  <div className="flex items-start gap-3">
                   <input
                     id="acceptTerms"
                     type="checkbox"
-                    className="mt-1 h-4 w-4 rounded border-slate-700 bg-slate-900 text-sky-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                    className="mt-1 h-4 w-4 rounded border-slate-300 text-sky-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 dark:border-slate-700 dark:bg-slate-900"
                     {...form.register('acceptTerms')}
                   />
-                  <Label htmlFor="acceptTerms" className="text-left text-slate-300">
-                    Acepto los términos, condiciones y políticas de privacidad de LaundryPro.
-                  </Label>
+                    <Label htmlFor="acceptTerms" className="text-left text-slate-700 dark:text-slate-300">
+                      Acepto los términos, condiciones y políticas de privacidad de LaundryPro.
+                    </Label>
+                  </div>
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => window.open('/informacion#terminos', '_blank', 'noopener')}
+                      className="text-xs font-semibold text-sky-600 underline transition hover:text-sky-500 dark:text-sky-300 dark:hover:text-sky-200"
+                    >
+                      Leer más
+                    </button>
+                  </div>
                 </div>
                 {form.formState.errors.acceptTerms ? (
                   <p className="text-xs text-rose-300">{form.formState.errors.acceptTerms.message}</p>
                 ) : null}
 
                 {serverError ? (
-                  <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+                  <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-700 dark:text-rose-200">
                     {serverError}
                   </div>
                 ) : null}
@@ -280,7 +311,7 @@ export default function RegisterPage() {
                   Crear mi lavandería
                 </Button>
 
-                <p className="text-center text-sm text-slate-400">
+                <p className="text-center text-sm text-slate-600 dark:text-slate-400">
                   ¿Ya tienes cuenta?{' '}
                   <Link href="/login" className="font-medium text-sky-300 transition hover:text-sky-200">
                     Inicia sesión aquí
@@ -306,7 +337,7 @@ type FieldGroupProps = {
 function FieldGroup({ label, htmlFor, error, icon, children }: FieldGroupProps) {
   return (
     <div className="space-y-2">
-      <Label htmlFor={htmlFor} className="flex items-center gap-2 text-sm text-slate-300">
+      <Label htmlFor={htmlFor} className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
         {icon}
         {label}
       </Label>

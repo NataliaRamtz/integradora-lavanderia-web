@@ -18,6 +18,10 @@ export default function TicketsPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [pedidoId, setPedidoId] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [manualCliente, setManualCliente] = useState('');
+  const [manualTotal, setManualTotal] = useState('');
+  const [manualNotas, setManualNotas] = useState('');
+  const [isManualGenerating, setIsManualGenerating] = useState(false);
 
   const pedidosQuery = usePedidosList(lavanderiaId, {
     estado: 'todos',
@@ -32,6 +36,7 @@ export default function TicketsPage() {
   const pedidosRecientes = useMemo(() => {
     return pedidosQuery.data?.slice(0, 10) ?? [];
   }, [pedidosQuery.data]);
+  const sinPedidosDisponible = !pedidosQuery.isLoading && (pedidosQuery.data?.length ?? 0) === 0;
 
   const generateTicket = async (pedido?: typeof pedidoSeleccionado) => {
     const targetPedido = pedido || pedidoSeleccionado;
@@ -99,6 +104,62 @@ LaundryPro - Sistema de Gestión de Lavanderías
     }
   };
 
+  const handleManualTicket = async () => {
+    if (!manualCliente.trim()) {
+      alert('Por favor ingresa el nombre del cliente para el ticket manual.');
+      return;
+    }
+
+    setIsManualGenerating(true);
+    try {
+      const totalNumber = Number(manualTotal) || 0;
+      const fecha = new Date().toLocaleString('es-MX', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const ticketContent = `
+╔═══════════════════════════════════════════════════════╗
+║         LAUNDRYPRO - TICKET MANUAL DEL ENCARGADO      ║
+╚═══════════════════════════════════════════════════════╝
+
+Lavandería: ${lavanderia?.nombre ?? 'N/A'}
+Fecha: ${fecha}
+Cliente: ${manualCliente}
+Total estimado: ${new Intl.NumberFormat('es-MX', {
+        style: 'currency',
+        currency: 'MXN',
+      }).format(totalNumber)}
+
+Notas adicionales:
+${manualNotas || 'Sin notas registradas'}
+
+Generado manualmente por el encargado desde el panel de tickets.
+      `.trim();
+
+      const blob = new Blob([ticketContent], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `ticket-manual-${manualCliente.replace(/\s+/g, '-')}-${Date.now()}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      setManualNotas('');
+      setManualCliente('');
+      setManualTotal('');
+    } catch (error) {
+      console.error('Error al generar ticket manual:', error);
+      alert('Error al generar el ticket manual. Intenta nuevamente.');
+    } finally {
+      setIsManualGenerating(false);
+    }
+  };
+
   return (
     <section className="space-y-6">
       <header className="space-y-1">
@@ -108,6 +169,13 @@ LaundryPro - Sistema de Gestión de Lavanderías
           Genera y descarga tickets digitales para los pedidos de tu lavandería.
         </p>
       </header>
+
+      {sinPedidosDisponible ? (
+        <div className="rounded-3xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-100">
+          Este cliente aún no tiene tickets generados porque no cuenta con pedidos previos. Crea su primer pedido desde
+          walk-in o espera a que el sistema sincronice nuevos pedidos para poder descargar su ticket.
+        </div>
+      ) : null}
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="dark:border-white/10 border-slate-200 dark:bg-slate-900/70 bg-white/80">
@@ -146,16 +214,19 @@ LaundryPro - Sistema de Gestión de Lavanderías
                             ? 'border-sky-500 bg-sky-500/10 dark:text-sky-200 text-sky-700'
                             : 'dark:border-white/10 dark:bg-slate-950/60 dark:text-slate-300 border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-900/80'
                         }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span>Pedido #{pedido.id.slice(0, 8).toUpperCase()}</span>
-                          <span className="text-xs">
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-semibold">Pedido #{pedido.id.slice(0, 8).toUpperCase()}</span>
+                            <span className="text-xs">
                             {new Intl.NumberFormat('es-MX', {
                               style: 'currency',
                               currency: 'MXN',
                             }).format(pedido.total)}
                           </span>
                         </div>
+                          <p className="text-xs mt-1">
+                            Cliente: {pedido.clienteNombre ?? 'Mostrador'}
+                          </p>
                       </button>
                     ))}
                   </div>
@@ -208,7 +279,7 @@ LaundryPro - Sistema de Gestión de Lavanderías
             <div className="space-y-2 mb-4">
               <Input
                 type="text"
-                placeholder="Buscar pedidos..."
+                placeholder="Buscar por cliente, teléfono o pedido..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-100 border-slate-300 bg-white text-slate-900"
@@ -233,6 +304,9 @@ LaundryPro - Sistema de Gestión de Lavanderías
                       </p>
                       <p className="text-xs dark:text-slate-400 text-slate-600">
                         {new Date(pedido.createdAt).toLocaleDateString('es-MX')}
+                      </p>
+                      <p className="text-xs dark:text-slate-400 text-slate-600">
+                        Cliente: {pedido.clienteNombre ?? 'Mostrador'}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -259,6 +333,74 @@ LaundryPro - Sistema de Gestión de Lavanderías
           </CardContent>
         </Card>
       </div>
+
+      <Card className="dark:border-white/10 border-slate-200 dark:bg-slate-900/70 bg-white/80">
+        <CardHeader>
+          <CardTitle className="dark:text-slate-100 text-slate-900">Crear ticket manual</CardTitle>
+          <p className="text-sm dark:text-slate-400 text-slate-600">
+            Úsalo cuando necesites entregar un comprobante rápido aunque el pedido aún no aparezca en el sistema.
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="manualCliente" className="text-sm dark:text-slate-200 text-slate-700">
+              Nombre del cliente
+            </Label>
+            <Input
+              id="manualCliente"
+              placeholder="Ej. Carla Ramírez"
+              value={manualCliente}
+              onChange={(event) => setManualCliente(event.target.value)}
+              className="dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-100 border-slate-300 bg-white text-slate-900"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="manualTotal" className="text-sm dark:text-slate-200 text-slate-700">
+              Total estimado (MXN)
+            </Label>
+            <Input
+              id="manualTotal"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="0.00"
+              value={manualTotal}
+              onChange={(event) => setManualTotal(event.target.value)}
+              className="dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-100 border-slate-300 bg-white text-slate-900"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="manualNotas" className="text-sm dark:text-slate-200 text-slate-700">
+              Notas para el ticket
+            </Label>
+            <textarea
+              id="manualNotas"
+              placeholder="Detalle de prendas, instrucciones o comentarios."
+              rows={4}
+              className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500 dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-100"
+              value={manualNotas}
+              onChange={(event) => setManualNotas(event.target.value)}
+            />
+          </div>
+          <Button
+            className="w-full bg-sky-600 text-white hover:bg-sky-700"
+            onClick={handleManualTicket}
+            disabled={isManualGenerating}
+          >
+            {isManualGenerating ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Generando ticket manual…
+              </>
+            ) : (
+              <>
+                <Plus className="mr-2 h-4 w-4" />
+                Crear y descargar ticket
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
 
       <Card className="dark:border-white/10 border-slate-200 dark:bg-slate-900/70 bg-white/80">
         <CardContent className="pt-6">

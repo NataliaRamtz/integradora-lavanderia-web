@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useSession } from '@/features/auth/session-context';
 import { usePedidosList } from '@/features/pedidos/queries';
+import { useServiciosResumen } from '@/features/servicios/queries';
 import type { PedidoEstado } from '@/features/pedidos/constants';
 import type { PedidoListItem } from '@/features/pedidos/schemas';
 
@@ -46,6 +47,7 @@ function PedidosPageContent() {
   const { activeRole } = useSession();
   const lavanderiaId = activeRole?.lavanderia_id ?? '';
   const searchParams = useSearchParams();
+  const serviciosQuery = useServiciosResumen(lavanderiaId);
 
   const [search, setSearch] = useState('');
   const [estado, setEstado] = useState<PedidoEstado | 'todos'>(() => {
@@ -70,20 +72,33 @@ function PedidosPageContent() {
   });
 
   const pedidos = pedidosQuery.data ?? [];
+  const catalogoVacio = !serviciosQuery.isLoading && (serviciosQuery.data?.length ?? 0) === 0;
 
   return (
     <section className="space-y-6">
       <header className="space-y-1">
         <p className="text-xs uppercase tracking-widest text-slate-500">Dashboard ▸ Pedidos</p>
-        <h1 className="text-3xl font-semibold text-slate-50">Gestión de Pedidos</h1>
-        <p className="text-sm text-slate-400">Administra todos los pedidos de tu lavandería</p>
+        <h1 className="text-3xl font-semibold text-slate-900 dark:text-slate-50">Gestión de Pedidos</h1>
+        <p className="text-sm text-slate-600 dark:text-slate-400">Administra todos los pedidos de tu lavandería</p>
       </header>
 
-      <article className="flex items-center justify-between gap-4 rounded-3xl border border-white/10 bg-slate-900/70 px-6 py-5">
+      {catalogoVacio ? (
+        <div className="rounded-3xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-100">
+          <p className="font-semibold">Antes de crear pedidos</p>
+          <p className="mt-1">
+            Necesitas agregar servicios a tu catálogo. Sin catálogo no es posible registrar pedidos nuevos.
+            <Link href="/staff/catalogo" className="ml-1 font-medium text-sky-600 underline dark:text-sky-300">
+              Crear catálogo
+            </Link>
+          </p>
+        </div>
+      ) : null}
+
+      <article className="flex items-center justify-between gap-4 rounded-3xl border border-slate-200 bg-white px-6 py-5 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
         <div>
           <p className="text-xs uppercase tracking-wide text-slate-500">Acción rápida</p>
-          <h2 className="text-xl font-semibold text-slate-50">Crear pedido rápido</h2>
-          <p className="mt-1 text-sm text-slate-400">
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-50">Crear pedido rápido</h2>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
             Registra pedidos mostrador sin necesidad de que el cliente tenga cuenta.
           </p>
         </div>
@@ -105,7 +120,7 @@ function PedidosPageContent() {
           <input
             type="search"
             placeholder="Buscar por número de pedido o cliente"
-            className="w-full rounded-2xl border border-white/10 bg-slate-900/70 py-3 pl-10 pr-4 text-sm text-slate-100 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+            className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500 dark:border-white/10 dark:bg-slate-900/70 dark:text-slate-100"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
@@ -115,10 +130,10 @@ function PedidosPageContent() {
           <select
             value={estado}
             onChange={(event) => setEstado(event.target.value as PedidoEstado | 'todos')}
-            className="appearance-none rounded-2xl border border-white/10 bg-slate-900/70 py-3 pl-4 pr-10 text-sm text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+            className="appearance-none rounded-2xl border border-slate-200 bg-white py-3 pl-4 pr-10 text-sm text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500 dark:border-white/10 dark:bg-slate-900/70 dark:text-slate-100"
           >
             {estadosOptions.map((option) => (
-              <option key={option.value} value={option.value} className="bg-slate-900 text-slate-100">
+              <option key={option.value} value={option.value} className="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100">
                 {option.label}
               </option>
             ))}
@@ -129,11 +144,11 @@ function PedidosPageContent() {
 
       <div className="space-y-4">
         {pedidosQuery.isLoading ? (
-          <div className="rounded-3xl border border-white/10 bg-slate-900/60 px-6 py-10 text-center text-sm text-slate-400">
+          <div className="rounded-3xl border border-slate-200 bg-white px-6 py-10 text-center text-sm text-slate-600 shadow-sm dark:border-white/10 dark:bg-slate-900/60 dark:text-slate-400">
             Cargando pedidos…
           </div>
         ) : pedidos.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-white/10 bg-slate-900/60 px-6 py-10 text-center text-sm text-slate-400">
+          <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center text-sm text-slate-600 dark:border-white/10 dark:bg-slate-900/60 dark:text-slate-400">
             No encontramos pedidos con los filtros aplicados.
           </div>
         ) : (
@@ -158,19 +173,19 @@ function PedidoCard({ pedido }: PedidoCardProps) {
   });
 
   return (
-    <article className="flex flex-col gap-4 rounded-3xl border border-white/10 bg-slate-900/70 px-6 py-5 shadow-sm">
+    <article className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white px-6 py-5 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="space-y-1">
-          <h2 className="text-lg font-semibold text-slate-100">Pedido #{pedido.id.slice(0, 6)}</h2>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Pedido #{pedido.id.slice(0, 6)}</h2>
           <p className="text-xs text-slate-500">Recepción: {fecha}</p>
           {pedido.notas ? (
-            <p className="text-xs text-slate-400">Notas: {pedido.notas}</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400">Notas: {pedido.notas}</p>
           ) : null}
         </div>
         <Badge className={`${estadoColor} text-xs font-semibold capitalize`}>{estadoLabel}</Badge>
       </div>
 
-      <div className="grid gap-2 text-sm text-slate-300 md:grid-cols-2">
+      <div className="grid gap-2 text-sm text-slate-700 dark:text-slate-300 md:grid-cols-2">
         <p>
           <span className="text-slate-500">Cliente:</span> {pedido.clienteNombre ?? 'Cliente mostrador'}
         </p>

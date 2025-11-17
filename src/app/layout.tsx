@@ -31,7 +31,7 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
-                  const theme = localStorage.getItem('theme') || 'dark';
+                  const theme = localStorage.getItem('theme') || 'light';
                   const root = document.documentElement;
                   if (theme === 'dark') {
                     root.classList.add('dark');

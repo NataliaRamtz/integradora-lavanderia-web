@@ -186,11 +186,16 @@ export const fetchPedidosList = async ({
 
   if (trimmedSearch) {
     const term = trimmedSearch.toLowerCase();
+    const numericTerm = term.replace(/[^0-9+]/g, '');
     return mapped.filter((pedido) => {
       const idMatch = pedido.id.toLowerCase().includes(term);
       const clienteIdMatch = pedido.clienteId?.toLowerCase().includes(term);
       const nombreMatch = pedido.clienteNombre?.toLowerCase().includes(term);
-      return idMatch || clienteIdMatch || nombreMatch;
+      const telefonoMatch =
+        numericTerm.length > 0
+          ? (pedido.clienteTelefono?.replace(/[^0-9+]/g, '').includes(numericTerm) ?? false)
+          : false;
+      return idMatch || clienteIdMatch || nombreMatch || telefonoMatch;
     });
   }
 

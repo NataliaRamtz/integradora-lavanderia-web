@@ -30,7 +30,7 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="min-h-screen dark:bg-gradient-to-b dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:text-slate-50 text-slate-900 transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-white text-slate-900 transition-colors duration-300 dark:bg-gradient-to-b dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-slate-50">
       <Header />
       <Hero />
       <Features />
@@ -42,7 +42,7 @@ export default async function HomePage() {
 }
 
 const Header = () => (
-  <header className="border-b dark:border-slate-800 border-slate-200 dark:bg-slate-950/85 bg-white/95 backdrop-blur transition-colors duration-300">
+  <header className="border-b border-slate-200 bg-white/90 backdrop-blur transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950/85">
     <div className="container mx-auto flex h-16 items-center justify-between px-4">
       <div className="flex items-center gap-2">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-500 shadow-lg shadow-sky-500/40">
@@ -51,13 +51,13 @@ const Header = () => (
         <span className="text-xl font-bold tracking-tight dark:text-slate-50 text-slate-900">LaundryPro</span>
       </div>
       <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
-        <Link href="#features" className="dark:text-slate-400 text-slate-600 transition hover:text-slate-100 dark:hover:text-slate-100 hover:text-slate-900">
+        <Link href="#features" className="text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
           Características
         </Link>
-        <Link href="#pricing" className="dark:text-slate-400 text-slate-600 transition hover:text-slate-100 dark:hover:text-slate-100 hover:text-slate-900">
+        <Link href="#pricing" className="text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
           Planes
         </Link>
-        <Link href="#about" className="dark:text-slate-400 text-slate-600 transition hover:text-slate-100 dark:hover:text-slate-100 hover:text-slate-900">
+        <Link href="/informacion#nosotros" className="text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
           Nosotros
         </Link>
       </nav>
@@ -76,12 +76,12 @@ const Header = () => (
 
 const Hero = () => (
   <section className="container mx-auto px-4 py-20 text-center">
-    <h1 className="mb-6 text-balance text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl md:text-6xl lg:text-7xl text-slate-50 dark:text-slate-50 text-slate-900">
+    <h1 className="mb-6 text-balance text-4xl font-extrabold leading-tight tracking-tight text-slate-900 dark:text-slate-50 sm:text-5xl md:text-6xl lg:text-7xl">
       Gestiona tu lavandería
       <br />
       <span className="text-sky-400 dark:text-sky-400 text-sky-600">con precisión y pasión</span>
     </h1>
-    <p className="mx-auto mb-10 max-w-2xl text-lg text-slate-300 sm:text-xl">
+    <p className="mx-auto mb-10 max-w-2xl text-lg text-slate-600 dark:text-slate-300 sm:text-xl">
       LaundryPro centraliza pedidos, clientes, servicios y reportes para que tu negocio crezca con datos confiables y
       una experiencia moderna para tu equipo y tus clientes.
     </p>
@@ -92,13 +92,8 @@ const Hero = () => (
           <ArrowRight className="ml-2 h-4 w-4" />
         </Link>
       </Button>
-      <Button
-        size="lg"
-        variant="outline"
-        asChild
-        className="w-full min-w-[200px] border-sky-500/50 bg-transparent text-slate-100 sm:w-auto"
-      >
-        <Link href="/login">Ver demo</Link>
+      <Button size="lg" variant="outline" asChild className="w-full min-w-[200px] border-sky-500/50 text-slate-900 sm:w-auto dark:text-slate-100">
+        <Link href="/informacion">Conocer LaundryPro</Link>
       </Button>
     </div>
     <div className="mx-auto mt-16 grid max-w-4xl gap-8 md:grid-cols-3">
@@ -112,15 +107,15 @@ const Hero = () => (
 const Stat = ({ value, label }: { value: string; label: string }) => (
   <div className="space-y-2">
     <div className="text-4xl font-bold text-sky-400">{value}</div>
-    <div className="text-sm text-slate-400">{label}</div>
+    <div className="text-sm text-slate-600 dark:text-slate-400">{label}</div>
   </div>
 );
 
 const Features = () => (
   <section id="features" className="container mx-auto px-4 py-20">
     <div className="mb-12 text-center">
-      <h2 className="mb-4 text-3xl font-bold md:text-4xl">Características principales</h2>
-      <p className="mx-auto max-w-2xl text-slate-300">
+      <h2 className="mb-4 text-3xl font-bold md:text-4xl text-slate-900 dark:text-slate-50">Características principales</h2>
+      <p className="mx-auto max-w-2xl text-slate-600 dark:text-slate-300">
         Diseñadas para el ritmo del día a día de tu equipo y con visión de expansión.
       </p>
     </div>
@@ -128,14 +123,14 @@ const Features = () => (
       {FEATURES.map((feature) => (
         <Card
           key={feature.title}
-          className="border border-slate-800 bg-slate-950/60 transition-all hover:border-sky-500/60 hover:shadow-lg hover:shadow-sky-500/10"
+          className="border border-slate-200 bg-white shadow-sm transition-all hover:border-sky-500/40 hover:shadow-lg hover:shadow-sky-500/10 dark:border-slate-800 dark:bg-slate-950/60"
         >
           <CardContent className="pt-6">
             <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-lg ${feature.bg}`}>
               <feature.icon className={`h-6 w-6 ${feature.color}`} />
             </div>
-            <h3 className="mb-2 text-xl font-semibold">{feature.title}</h3>
-            <p className="text-slate-400">{feature.description}</p>
+            <h3 className="mb-2 text-xl font-semibold text-slate-900 dark:text-slate-50">{feature.title}</h3>
+            <p className="text-slate-600 dark:text-slate-400">{feature.description}</p>
           </CardContent>
         </Card>
       ))}
@@ -146,8 +141,8 @@ const Features = () => (
 const Pricing = () => (
   <section id="pricing" className="container mx-auto px-4 py-20">
     <div className="mb-12 text-center">
-      <h2 className="mb-4 text-3xl font-bold md:text-4xl">Planes flexibles</h2>
-      <p className="mx-auto max-w-2xl text-slate-300">
+      <h2 className="mb-4 text-3xl font-bold md:text-4xl text-slate-900 dark:text-slate-50">Planes flexibles</h2>
+      <p className="mx-auto max-w-2xl text-slate-600 dark:text-slate-300">
         Escala a tu ritmo: paga solo por lo que tu operación necesita.
       </p>
     </div>
@@ -156,24 +151,24 @@ const Pricing = () => (
         <Card
           key={plan.title}
           className={`border ${
-            plan.highlight ? 'border-sky-500 shadow-2xl shadow-sky-500/20' : 'border-slate-800'
-          } bg-slate-950/70`}
+            plan.highlight ? 'border-sky-500 shadow-2xl shadow-sky-500/20' : 'border-slate-200 dark:border-slate-800'
+          } bg-white dark:bg-slate-950/70`}
         >
           <CardContent className="pt-6">
             {plan.highlight && (
               <Badge className="mb-4 border border-sky-500/50 bg-sky-500/10 text-sky-300">Popular</Badge>
             )}
             <div className="mb-4">
-              <h3 className="text-2xl font-bold">{plan.title}</h3>
-              <p className="text-sm text-slate-400">{plan.subtitle}</p>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-50">{plan.title}</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400">{plan.subtitle}</p>
             </div>
             <div className="mb-6">
-              <span className="text-4xl font-bold">{plan.price}</span>
-              <span className="text-slate-400">{plan.period}</span>
+              <span className="text-4xl font-bold text-slate-900 dark:text-slate-50">{plan.price}</span>
+              <span className="text-slate-600 dark:text-slate-400">{plan.period}</span>
             </div>
             <ul className="mb-6 space-y-3 text-left">
               {plan.features.map((item) => (
-                <li key={item} className="flex items-start gap-2 text-sm text-slate-300">
+                <li key={item} className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-300">
                   <CheckCircle2 className="mt-0.5 h-5 w-5 text-sky-400" />
                   <span>{item}</span>
                 </li>
@@ -191,10 +186,10 @@ const Pricing = () => (
 
 const Cta = () => (
   <section className="container mx-auto px-4 py-20">
-    <Card className="border border-sky-500/60 bg-gradient-to-br from-sky-500/10 via-sky-500/5 to-sky-500/20">
+    <Card className="border border-sky-500/60 bg-gradient-to-br from-sky-100 via-white to-sky-50 dark:from-sky-500/10 dark:via-sky-500/5 dark:to-sky-500/20">
       <CardContent className="py-12 text-center">
-        <h2 className="mb-4 text-3xl font-bold md:text-4xl">Impulsa tu lavandería con LaundryPro</h2>
-        <p className="mx-auto mb-8 max-w-2xl text-lg text-slate-200">
+        <h2 className="mb-4 text-3xl font-bold md:text-4xl text-slate-900 dark:text-slate-50">Impulsa tu lavandería con LaundryPro</h2>
+        <p className="mx-auto mb-8 max-w-2xl text-lg text-slate-700 dark:text-slate-200">
           Te acompañamos desde el primer pedido hasta la expansión regional. Construimos esta plataforma porque creemos
           en el potencial de tu negocio.
         </p>
@@ -210,7 +205,7 @@ const Cta = () => (
 );
 
 const Footer = () => (
-  <footer id="about" className="border-t border-slate-800 dark:border-slate-800 border-slate-200 bg-slate-950/90 dark:bg-slate-950/90 bg-white/95">
+  <footer id="about" className="border-t border-slate-200 bg-white/95 dark:border-slate-800 dark:bg-slate-950/90">
     <div className="container mx-auto px-4 py-12">
       <div className="grid gap-8 md:grid-cols-4">
         <div>
@@ -218,9 +213,9 @@ const Footer = () => (
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-500">
               <Shirt className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-slate-50 dark:text-slate-50 text-slate-900">LaundryPro</span>
+            <span className="text-xl font-bold text-slate-900 dark:text-slate-50">LaundryPro</span>
           </div>
-          <p className="text-sm text-slate-400 dark:text-slate-400 text-slate-600">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             Creamos herramientas enfocadas en resolver los retos reales de las lavanderías modernas.
           </p>
         </div>
@@ -229,7 +224,7 @@ const Footer = () => (
           links={[
             { label: 'Características', href: '#features' },
             { label: 'Precios', href: '#pricing' },
-            { label: 'Demo', href: '/login' },
+            { label: 'Información', href: '/informacion' },
           ]}
         />
         <FooterColumn
@@ -248,7 +243,7 @@ const Footer = () => (
           ]}
         />
       </div>
-      <div className="mt-10 border-t border-slate-800 dark:border-slate-800 border-slate-200 pt-6 text-center text-sm text-slate-500 dark:text-slate-500 text-slate-600">
+      <div className="mt-10 border-t border-slate-200 pt-6 text-center text-sm text-slate-600 dark:border-slate-800 dark:text-slate-500">
         © {new Date().getFullYear()} LaundryPro. Todos los derechos reservados.
       </div>
     </div>

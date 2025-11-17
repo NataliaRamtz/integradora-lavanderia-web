@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import {
   Loader2,
@@ -10,6 +11,7 @@ import {
   Plus,
   Package2,
   ArrowRight,
+  Search,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -47,6 +49,8 @@ export default function StaffHomePage() {
   const lavanderiaId = activeRole?.lavanderia_id ?? '';
   const { data: lavanderia } = useLavanderia(lavanderiaId);
 
+  const [searchTerm, setSearchTerm] = useState('');
+
   const {
     data: resumen,
     isLoading: resumenLoading,
@@ -54,9 +58,12 @@ export default function StaffHomePage() {
   } = usePedidosDashboardResumen(lavanderiaId);
 
   const serviciosQuery = useServiciosResumen(lavanderiaId);
+  const catalogoVacio = !serviciosQuery.isLoading && (serviciosQuery.data?.length ?? 0) === 0;
 
   const pendientesQuery = usePedidosPorEstado(lavanderiaId, ['creado']);
   const enProcesoQuery = usePedidosPorEstado(lavanderiaId, ['en_proceso']);
+
+  const normalizedSearch = searchTerm.trim().toLowerCase();
 
   const resumenData = resumen ?? {
     pendientes: 0,
@@ -117,6 +124,18 @@ export default function StaffHomePage() {
         <h1 className="text-3xl font-semibold dark:text-slate-50 text-slate-900">{lavanderia?.nombre ?? 'Tu lavandería'}</h1>
         <p className="text-sm dark:text-slate-400 text-slate-600">Panel de control de tu lavandería</p>
       </header>
+
+      {catalogoVacio ? (
+        <div className="rounded-3xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-100">
+          <p className="font-semibold">Activa tu catálogo para comenzar</p>
+          <p className="mt-1">
+            Aún no tienes servicios en el catálogo. Crea al menos uno para poder registrar pedidos nuevos.
+            <Link href="/staff/catalogo" className="ml-1 font-medium text-sky-600 underline dark:text-sky-300">
+              Gestionar catálogo
+            </Link>
+          </p>
+        </div>
+      ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {metricCards.map((card) => {
@@ -189,7 +208,11 @@ export default function StaffHomePage() {
                 Inicia un pedido tipo walk-in con pocos clics.
               </p>
             </div>
-            <Plus className="h-10 w-10 text-sky-400 dark:text-sky-400 text-sky-600" />
+            <Button size="icon" variant="secondary" className="h-10 w-10 bg-sky-500/10 text-sky-600 hover:bg-sky-500/20 dark:bg-sky-500/20 dark:text-sky-200">
+              <Link href="/staff/walk-in" className="flex h-full w-full items-center justify-center">
+                <Plus className="h-5 w-5" />
+              </Link>
+            </Button>
           </div>
           <div className="mt-4 flex gap-3">
             <Button asChild className="bg-sky-500 text-white hover:bg-sky-600">
@@ -242,6 +265,24 @@ export default function StaffHomePage() {
         </article>
       </div>
 
+      <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="relative flex-1 min-w-[240px]">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input
+              type="search"
+              placeholder="Buscar pedidos por número, cliente o teléfono"
+              className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500 dark:border-white/10 dark:bg-slate-950/60 dark:text-slate-100"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+            />
+          </div>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Este buscador aplica a las tarjetas de pedidos pendientes y en proceso.
+          </p>
+        </div>
+      </div>
+
       <div className="grid gap-6 lg:grid-cols-2">
         <PedidoListCard
           title="Pedidos Pendientes"
@@ -249,6 +290,7 @@ export default function StaffHomePage() {
           query={pendientesQuery}
           emptyMessage="No hay pedidos esperando procesamiento."
           estado="creado"
+          searchTerm={normalizedSearch}
         />
         <PedidoListCard
           title="Pedidos en Proceso"
@@ -256,6 +298,7 @@ export default function StaffHomePage() {
           query={enProcesoQuery}
           emptyMessage="No hay pedidos en proceso por el momento."
           estado="en_proceso"
+          searchTerm={normalizedSearch}
         />
       </div>
 
@@ -274,10 +317,14 @@ type PedidoListCardProps = {
   query: ReturnType<typeof usePedidosPorEstado>;
   emptyMessage: string;
   estado: 'creado' | 'en_proceso' | 'entregado';
+  searchTerm?: string;
 };
 
-function PedidoListCard({ title, description, query, emptyMessage, estado }: PedidoListCardProps) {
-  const items = (query.data ?? []).slice(0, 4);
+function PedidoListCard({ title, description, query, emptyMessage, estado, searchTerm }: PedidoListCardProps) {
+  const filteredItems = (query.data ?? []).filter((pedido) => matchesSearchTerm(pedido, searchTerm));
+  const items = filteredItems.slice(0, 4);
+  const noResults = !query.isLoading && filteredItems.length === 0;
+  const hasSearch = Boolean(searchTerm?.trim());
 
   return (
     <Link 
@@ -301,9 +348,15 @@ function PedidoListCard({ title, description, query, emptyMessage, estado }: Ped
             <div className="flex items-center gap-3 text-sm dark:text-slate-400 text-slate-600">
               <Loader2 className="h-4 w-4 animate-spin" /> Cargando pedidos…
             </div>
-          ) : items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8">
-              <p className="text-sm dark:text-slate-500 text-slate-600 mb-4">{emptyMessage}</p>
+          ) : noResults ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center text-sm text-slate-500 dark:text-slate-400">
+              {hasSearch ? (
+                <p className="mb-3">
+                  No encontramos pedidos que coincidan con “{searchTerm?.trim()}” en esta sección.
+                </p>
+              ) : (
+                <p className="mb-3">{emptyMessage}</p>
+              )}
               <div className="flex items-center gap-2 text-sm bg-sky-500 text-white px-4 py-2 rounded-lg shadow-lg shadow-sky-500/30">
                 <span>Ver pedidos {title.toLowerCase()}</span>
                 <ArrowRight className="h-4 w-4" />
@@ -327,6 +380,24 @@ function PedidoListCard({ title, description, query, emptyMessage, estado }: Ped
     </Link>
   );
 }
+
+const matchesSearchTerm = (pedido: PedidoListItem, term?: string) => {
+  const normalized = term?.trim().toLowerCase();
+  if (!normalized || normalized.length === 0) {
+    return true;
+  }
+
+  const numericTerm = normalized.replace(/[^0-9+]/g, '');
+  const idMatch = pedido.id.toLowerCase().includes(normalized);
+  const nombreMatch = pedido.clienteNombre?.toLowerCase().includes(normalized);
+  const notasMatch = pedido.notas?.toLowerCase().includes(normalized);
+  const telefonoMatch =
+    numericTerm.length > 0
+      ? (pedido.clienteTelefono?.replace(/[^0-9+]/g, '').includes(numericTerm) ?? false)
+      : false;
+
+  return idMatch || nombreMatch || notasMatch || telefonoMatch;
+};
 
 type PedidoRowProps = {
   pedido: PedidoListItem;

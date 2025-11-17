@@ -61,18 +61,18 @@ export default function EstadisticasPage() {
     <section className="space-y-6">
       <header className="space-y-1">
         <p className="text-xs uppercase tracking-widest text-slate-500">Dashboard ▸ Estadísticas</p>
-        <h1 className="text-3xl font-semibold text-slate-50">Estadísticas y métricas</h1>
-        <p className="text-sm text-slate-400">
+        <h1 className="text-3xl font-semibold text-slate-900 dark:text-slate-50">Estadísticas y métricas</h1>
+        <p className="text-sm text-slate-600 dark:text-slate-400">
           Analiza el rendimiento de tu lavandería con indicadores clave, tendencias y servicios más solicitados.
         </p>
       </header>
 
       {isLoading ? (
-        <div className="flex items-center justify-center rounded-3xl border border-white/10 bg-slate-900/60 py-20 text-slate-400">
+        <div className="flex items-center justify-center rounded-3xl border border-slate-200 bg-white py-20 text-slate-600 shadow-sm dark:border-white/10 dark:bg-slate-900/60 dark:text-slate-400">
           <Loader2 className="mr-3 h-5 w-5 animate-spin" /> Cargando estadísticas…
         </div>
       ) : !data ? (
-        <div className="rounded-3xl border border-white/10 bg-slate-900/60 px-6 py-16 text-center text-sm text-slate-400">
+        <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 px-6 py-16 text-center text-sm text-slate-600 dark:border-white/10 dark:bg-slate-900/60 dark:text-slate-400">
           No encontramos datos suficientes para mostrar las estadísticas.
         </div>
       ) : (
@@ -105,11 +105,11 @@ export default function EstadisticasPage() {
           </section>
 
           <section className="grid gap-6 xl:grid-cols-[2fr_1fr]">
-            <Card className="border-white/10 bg-slate-900/70">
+            <Card className="border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900/70">
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle className="text-slate-100">Pedidos completados</CardTitle>
-                  <p className="text-sm text-slate-400">Compara por semana, mes y año</p>
+                  <CardTitle className="text-slate-900 dark:text-slate-100">Pedidos completados</CardTitle>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">Compara por semana, mes y año</p>
                 </div>
               </CardHeader>
               <CardContent className="grid gap-6 md:grid-cols-3">
@@ -119,9 +119,9 @@ export default function EstadisticasPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-white/10 bg-slate-900/70">
+            <Card className="border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900/70">
               <CardHeader>
-                <CardTitle className="text-slate-100">Métricas clave</CardTitle>
+                <CardTitle className="text-slate-900 dark:text-slate-100">Métricas clave</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <KeyMetric
@@ -139,10 +139,10 @@ export default function EstadisticasPage() {
           </section>
 
           <section className="grid gap-6 lg:grid-cols-2">
-            <Card className="border-white/10 bg-slate-900/70">
+            <Card className="border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900/70">
               <CardHeader>
-                <CardTitle className="text-slate-100">Estado de pedidos</CardTitle>
-                <p className="text-sm text-slate-400">Distribución actual de pedidos por estado</p>
+                <CardTitle className="text-slate-900 dark:text-slate-100">Estado de pedidos</CardTitle>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Distribución actual de pedidos por estado</p>
               </CardHeader>
               <CardContent className="space-y-4">
                 {Object.entries(data.estadoPedidos).map(([estado, value]) => {
@@ -168,10 +168,10 @@ export default function EstadisticasPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-white/10 bg-slate-900/70">
+            <Card className="border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900/70">
               <CardHeader>
-                <CardTitle className="text-slate-100">Ingresos estimados</CardTitle>
-                <p className="text-sm text-slate-400">Últimos 6 meses</p>
+                <CardTitle className="text-slate-900 dark:text-slate-100">Ingresos estimados</CardTitle>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Últimos 6 meses</p>
               </CardHeader>
               <CardContent className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
@@ -196,10 +196,10 @@ export default function EstadisticasPage() {
             </Card>
           </section>
 
-          <Card className="border-white/10 bg-slate-900/70">
+          <Card className="border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900/70">
             <CardHeader>
-              <CardTitle className="text-slate-100">Servicios más solicitados</CardTitle>
-              <p className="text-sm text-slate-400">Top 5 según cantidad vendida (últimos pedidos)</p>
+              <CardTitle className="text-slate-900 dark:text-slate-100">Servicios más solicitados</CardTitle>
+              <p className="text-sm text-slate-600 dark:text-slate-400">Top 5 según cantidad vendida (últimos pedidos)</p>
             </CardHeader>
             <CardContent className="h-80">
               {data.serviciosFrecuentes.length === 0 ? (
@@ -237,16 +237,16 @@ type MetricCardProps = {
 
 function MetricCard({ title, value, subtitle, badge }: MetricCardProps) {
   return (
-    <Card className="border-white/10 bg-slate-900/70">
+    <Card className="border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900/70">
       <CardHeader className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-slate-400">{title}</p>
-            <p className="mt-2 text-3xl font-semibold text-slate-50">{value}</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400">{title}</p>
+            <p className="mt-2 text-3xl font-semibold text-slate-900 dark:text-slate-50">{value}</p>
           </div>
-          <Badge className="bg-sky-500/15 text-sky-200">{badge}</Badge>
+          <Badge className="bg-sky-100 text-sky-600 dark:bg-sky-500/15 dark:text-sky-200">{badge}</Badge>
         </div>
-        <p className="text-xs text-slate-500">{subtitle}</p>
+        <p className="text-xs text-slate-500 dark:text-slate-500">{subtitle}</p>
       </CardHeader>
     </Card>
   );
@@ -259,9 +259,9 @@ type StatBlockProps = {
 
 function StatBlock({ label, value }: StatBlockProps) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-5">
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-5 dark:border-white/10 dark:bg-slate-950/70">
       <p className="text-xs uppercase tracking-widest text-slate-500">{label}</p>
-      <p className="mt-3 text-3xl font-semibold text-slate-50">{value}</p>
+      <p className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-50">{value}</p>
     </div>
   );
 }
@@ -275,10 +275,10 @@ type KeyMetricProps = {
 function KeyMetric({ label, value, variation }: KeyMetricProps) {
   const positive = variation >= 0;
   return (
-    <div className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-5">
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-5 dark:border-white/10 dark:bg-slate-950/70">
       <p className="text-xs uppercase tracking-widest text-slate-500">{label}</p>
       <div className="mt-3 flex items-center justify-between">
-        <p className="text-3xl font-semibold text-slate-50">{value}</p>
+        <p className="text-3xl font-semibold text-slate-900 dark:text-slate-50">{value}</p>
         <span
           className={cn(
             'inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold',
