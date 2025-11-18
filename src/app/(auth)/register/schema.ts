@@ -5,17 +5,19 @@ export const registerSchema = z
     firstName: z
       .string()
       .trim()
-      .min(2, 'Ingresa al menos 2 caracteres.')
+      .min(3, 'Ingresa al menos 3 caracteres.')
       .max(60, 'Mantén este campo corto.'),
     lastName: z
       .string()
       .trim()
-      .min(2, 'Ingresa al menos 2 caracteres.')
+      .min(3, 'Ingresa al menos 3 caracteres.')
       .max(60, 'Mantén este campo corto.'),
     phone: z
       .string()
       .trim()
-      .regex(/^[0-9+\-\s()]{8,20}$/, 'Ingresa un teléfono válido.'),
+      .regex(/^[0-9]+$/, 'El teléfono solo puede contener números.')
+      .min(10, 'El teléfono debe tener al menos 10 caracteres.')
+      .max(15, 'El teléfono no puede tener más de 15 caracteres.'),
     email: z.string().email('Ingresa un correo válido.'),
     password: z
       .string()
