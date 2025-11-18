@@ -70,9 +70,6 @@ export default function RegisterPage() {
 
   const passwordValue = form.watch('password');
   const confirmPasswordValue = form.watch('confirmPassword');
-  const emailValue = form.watch('email');
-  const [emailExists, setEmailExists] = useState(false);
-  const [checkingEmail, setCheckingEmail] = useState(false);
   
   // Validación dinámica de contraseña
   const getPasswordErrors = (password: string): string[] => {
@@ -100,65 +97,9 @@ export default function RegisterPage() {
     return errors;
   };
 
-  // Verificar si el email ya existe
-  const checkEmailExists = async (email: string) => {
-    if (!email || !email.includes('@')) {
-      setEmailExists(false);
-      return;
-    }
-
-    setCheckingEmail(true);
-    try {
-      const supabase = getBrowserClient();
-      // Intentar hacer signIn con credenciales dummy
-      // Si el error es "Invalid login credentials", el email existe pero la contraseña es incorrecta
-      // Si el error es "Email not confirmed" o similar, el email existe
-      // Si el error es "User not found", el email no existe
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password: 'dummy_check_123!@#',
-      });
-
-      if (error) {
-        const errorMsg = error.message?.toLowerCase() || '';
-        // Si el error indica que el usuario no existe
-        if (errorMsg.includes('user not found') || errorMsg.includes('email not found') || errorMsg.includes('does not exist')) {
-          setEmailExists(false);
-        } else {
-          // Otros errores (Invalid login, Email not confirmed, etc.) indican que el email existe
-          setEmailExists(true);
-        }
-      } else {
-        // Si no hay error (no debería pasar con contraseña dummy), asumimos que existe
-        setEmailExists(true);
-      }
-    } catch (error) {
-      // En caso de error inesperado, asumimos que no existe para no bloquear al usuario
-      setEmailExists(false);
-    } finally {
-      setCheckingEmail(false);
-    }
-  };
-
-  // Verificar email cuando el usuario termine de escribir (onBlur)
-  const handleEmailBlur = async () => {
-    setActiveField(null);
-    if (emailValue && emailValue.includes('@')) {
-      await checkEmailExists(emailValue);
-    } else {
-      setEmailExists(false);
-    }
-  };
 
   const onSubmit = form.handleSubmit(async (values) => {
     setServerError(null);
-    
-    // Verificar si el email existe antes de enviar
-    if (emailExists) {
-      setServerError('Este correo ya está registrado. Por favor, usa otro correo o inicia sesión.');
-      return;
-    }
-    
     setIsSubmitting(true);
 
     const supabase = getBrowserClient();
@@ -181,7 +122,28 @@ export default function RegisterPage() {
       });
 
       if (signUpError || !signUpData?.user) {
-        throw new Error(signUpError?.message ?? 'No pudimos crear tu cuenta. Intenta nuevamente.');
+        // Traducir errores comunes de Supabase al español
+        let errorMessage = signUpError?.message ?? 'No pudimos crear tu cuenta. Intenta nuevamente.';
+        
+        const errorMsg = (signUpError?.message || '').toLowerCase();
+        const errorCode = (signUpError?.code || '').toLowerCase();
+        
+        // Verificar si el error indica que el email ya está registrado
+        if (
+          errorMsg.includes('user already registered') ||
+          errorMsg.includes('email already registered') ||
+          errorMsg.includes('already registered') ||
+          errorMsg.includes('already exists') ||
+          errorCode === 'user_already_registered'
+        ) {
+          errorMessage = 'Este correo ya está registrado. Por favor, usa otro correo o inicia sesión.';
+        } else if (errorMsg.includes('email rate limit') || errorMsg.includes('too many requests')) {
+          errorMessage = 'Demasiados intentos. Por favor, espera unos minutos e intenta nuevamente.';
+        } else if (errorMsg.includes('invalid email')) {
+          errorMessage = 'El correo electrónico no es válido. Por favor, verifica e intenta nuevamente.';
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const user = signUpData.user;
@@ -328,31 +290,20 @@ export default function RegisterPage() {
                   <FieldGroup
                     label="Correo"
                     icon={<Mail className="h-4 w-4" />}
-                    error={emailExists ? 'Este correo ya está registrado' : form.formState.errors.email?.message}
+                    error={form.formState.errors.email?.message}
                     isActive={activeField === 'email'}
                     htmlFor="email"
                   >
-                    <div className="relative">
-                      <Input
-                        id="email"
-                        type="email"
-                        autoComplete="email"
-                        placeholder="ejemplo@correo.com"
-                        className={checkingEmail ? 'pr-10' : ''}
-                        onFocus={() => {
-                          setActiveField('email');
-                          setEmailExists(false);
-                        }}
-                        {...form.register('email', {
-                          onBlur: handleEmailBlur,
-                        })}
-                      />
-                      {checkingEmail && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                          <Loader2 className="h-4 w-4 animate-spin text-[#4C89D9]" />
-                        </div>
-                      )}
-                    </div>
+                    <Input
+                      id="email"
+                      type="email"
+                      autoComplete="email"
+                      placeholder="ejemplo@correo.com"
+                      onFocus={() => setActiveField('email')}
+                      {...form.register('email', {
+                        onBlur: () => setActiveField(null),
+                      })}
+                    />
                   </FieldGroup>
                 </div>
 
