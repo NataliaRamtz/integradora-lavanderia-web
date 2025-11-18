@@ -37,11 +37,11 @@ const currencyFormatterPrecise = new Intl.NumberFormat('es-MX', {
 });
 
 const estadoConfig: Record<PedidoEstado, { label: string; className: string }> = {
-  creado: { label: 'En espera', className: 'bg-sky-100 text-sky-700' },
-  en_proceso: { label: 'En proceso', className: 'bg-amber-100 text-amber-700' },
-  listo: { label: 'Listo', className: 'bg-emerald-100 text-emerald-700' },
-  entregado: { label: 'Entregado', className: 'bg-slate-200 text-slate-700' },
-  cancelado: { label: 'Cancelado', className: 'bg-rose-100 text-rose-700' },
+  creado: { label: 'En espera', className: 'bg-[#4C89D9]/20 text-[#4C89D9] border border-[#4C89D9]/30' },
+  en_proceso: { label: 'En proceso', className: 'bg-[#FFD97B]/20 text-[#FFD97B] border border-[#FFD97B]/30' },
+  listo: { label: 'Listo', className: 'bg-[#6DF2A4]/20 text-[#6DF2A4] border border-[#6DF2A4]/30' },
+  entregado: { label: 'Entregado', className: 'bg-[#8FA1B7]/20 text-[#8FA1B7] border border-[#8FA1B7]/30' },
+  cancelado: { label: 'Cancelado', className: 'bg-[#FF8B6B]/20 text-[#FF8B6B] border border-[#FF8B6B]/30' },
 };
 
 export default function StaffHomePage() {
@@ -108,10 +108,10 @@ export default function StaffHomePage() {
 
   if (!lavanderiaId) {
     return (
-      <section className="flex flex-1 flex-col items-center justify-center gap-3 rounded-3xl border border-dashed dark:border-white/10 border-slate-200 dark:bg-slate-900/70 bg-white/80 p-12 text-center">
-        <ClipboardList className="h-10 w-10 dark:text-slate-500 text-slate-600" />
-        <h2 className="text-xl font-semibold dark:text-slate-100 text-slate-900">Selecciona una lavandería</h2>
-        <p className="max-w-md text-sm dark:text-slate-400 text-slate-600">
+      <section className="flex flex-1 flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-[#25354B]/50 bg-[#1B2A40]/60 p-12 text-center">
+        <ClipboardList className="h-10 w-10 text-[#8FA1B7]" />
+        <h2 className="text-xl font-semibold text-[#F2F5FA]">Selecciona una lavandería</h2>
+        <p className="max-w-md text-sm text-[#BFC7D3]">
           Vincula tu rol de encargado a una lavandería para visualizar los indicadores operativos.
         </p>
       </section>
@@ -120,20 +120,23 @@ export default function StaffHomePage() {
 
   return (
     <section className="space-y-8">
-      <header className="space-y-1">
-        <h1 className="text-3xl font-semibold dark:text-slate-50 text-slate-900">{lavanderia?.nombre ?? 'Tu lavandería'}</h1>
-        <p className="text-sm dark:text-slate-400 text-slate-600">Panel de control de tu lavandería</p>
+      <header className="space-y-2 mb-2">
+        <h1 className="text-4xl font-extrabold bg-gradient-to-r from-[#F2F5FA] via-[#4C89D9] to-[#60C2D8] bg-clip-text text-transparent">{lavanderia?.nombre ?? 'Tu lavandería'}</h1>
+        <p className="text-sm text-[#BFC7D3] font-medium">Panel de control de tu lavandería</p>
       </header>
 
       {catalogoVacio ? (
-        <div className="rounded-3xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-100">
-          <p className="font-semibold">Activa tu catálogo para comenzar</p>
-          <p className="mt-1">
-            Aún no tienes servicios en el catálogo. Crea al menos uno para poder registrar pedidos nuevos.
-            <Link href="/staff/catalogo" className="ml-1 font-medium text-sky-600 underline dark:text-sky-300">
-              Gestionar catálogo
-            </Link>
-          </p>
+        <div className="group relative overflow-hidden rounded-3xl border-2 border-[#FFD97B]/40 bg-gradient-to-br from-[#FFD97B]/10 via-[#FFD97B]/5 to-[#FFD97B]/10 p-6 text-sm text-[#FFD97B] backdrop-blur-sm transition-all duration-300 hover:border-[#FFD97B]/60 hover:shadow-xl hover:shadow-[#FFD97B]/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#FFD97B]/5 via-transparent to-[#FFD97B]/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="relative">
+            <p className="font-bold text-base mb-2">Activa tu catálogo para comenzar</p>
+            <p className="leading-relaxed">
+              Aún no tienes servicios en el catálogo. Crea al menos uno para poder registrar pedidos nuevos.
+              <Link href="/staff/catalogo" className="ml-1.5 font-bold text-[#60C2D8] underline decoration-2 underline-offset-2 transition-all duration-300 hover:text-[#4C89D9]">
+                Gestionar catálogo
+              </Link>
+            </p>
+          </div>
         </div>
       ) : null}
 
@@ -152,37 +155,60 @@ export default function StaffHomePage() {
 
           const content = (
             <article
-              className={`rounded-3xl border dark:border-white/10 border-slate-200 dark:bg-slate-900/70 bg-white/80 p-5 shadow-sm dark:shadow-slate-950/30 shadow-slate-200/50 ${
+              className={`group relative overflow-hidden rounded-3xl border-2 border-[#25354B]/60 bg-gradient-to-br from-[#1B2A40]/80 via-[#25354B]/50 to-[#1B2A40]/80 p-6 backdrop-blur-md transition-all duration-500 ${
                 isClickable 
-                  ? 'cursor-pointer transition-all duration-300 hover:scale-105 hover:border-sky-500/50 hover:shadow-lg hover:shadow-sky-500/20 active:scale-95' 
+                  ? 'cursor-pointer hover:border-[#4C89D9] hover:bg-gradient-to-br hover:from-[#1B2A40] hover:via-[#25354B]/70 hover:to-[#1B2A40] hover:shadow-[0_0_40px_rgba(76,137,217,0.4)] hover:-translate-y-2 hover:scale-[1.02] active:scale-[0.98]' 
                   : ''
               }`}
             >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs uppercase tracking-wide dark:text-slate-500 text-slate-600">{card.label}</p>
-                  <p className="mt-2 text-3xl font-semibold dark:text-slate-50 text-slate-900">
-                    {resumenLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : card.value}
-                  </p>
+              {/* Animated gradient overlay */}
+              {isClickable && (
+                <>
+                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#4C89D9]/10 via-[#60C2D8]/5 to-[#4C89D9]/10 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                  {/* Glow effect */}
+                  <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-[#4C89D9]/20 via-[#60C2D8]/20 to-[#4C89D9]/20 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
+                  {/* Shine effect */}
+                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 -skew-x-12 translate-x-[-200%] transition-all duration-1000 group-hover:opacity-100 group-hover:translate-x-[200%]" />
+                </>
+              )}
+              
+              <div className="relative flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-xs uppercase tracking-widest text-[#8FA1B7] font-medium">{card.label}</p>
+                  <div className="mt-3 relative inline-block">
+                    {isClickable && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#4C89D9] to-[#60C2D8] blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
+                    )}
+                    <p className="relative text-3xl font-extrabold text-[#F2F5FA]">
+                      {resumenLoading ? <Loader2 className="h-6 w-6 animate-spin text-[#4C89D9]" /> : card.value}
+                    </p>
+                  </div>
                 </div>
-                <card.icon className={`h-10 w-10 dark:text-slate-400 text-slate-500 ${isClickable ? 'transition-transform duration-300 group-hover:scale-110' : ''}`} />
+                <div className={`relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#4C89D9]/20 to-[#60C2D8]/20 border border-[#4C89D9]/30 transition-all duration-300 ${isClickable ? 'group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-xl group-hover:shadow-[#4C89D9]/30' : ''}`}>
+                  <card.icon className={`h-7 w-7 text-[#4C89D9] transition-colors duration-300 ${isClickable ? 'group-hover:text-[#60C2D8]' : ''}`} />
+                </div>
               </div>
-              <div className="flex items-center justify-between mt-3">
+              <div className="relative flex items-center justify-between mt-4">
                 <p
-                  className={`text-xs ${
+                  className={`text-xs font-medium ${
                     card.highlight !== undefined
                       ? card.highlight >= 0
-                        ? 'text-emerald-400 dark:text-emerald-400'
-                        : 'text-rose-400 dark:text-rose-400'
-                      : 'dark:text-slate-500 text-slate-600'
+                        ? 'text-[#6DF2A4]'
+                        : 'text-[#FF8B6B]'
+                      : 'text-[#8FA1B7]'
                   }`}
                 >
                   {card.description}
                 </p>
                 {isClickable && (
-                  <ArrowRight className="h-4 w-4 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <ArrowRight className="h-4 w-4 text-[#4C89D9] opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
                 )}
               </div>
+              
+              {/* Corner accent */}
+              {isClickable && (
+                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#4C89D9]/20 to-transparent rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              )}
             </article>
           );
 
@@ -199,85 +225,88 @@ export default function StaffHomePage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[2fr_3fr]">
-        <article className="rounded-3xl border dark:border-white/10 border-slate-200 dark:bg-slate-900/70 bg-white/80 p-6">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-xs uppercase tracking-wide dark:text-slate-500 text-slate-600">Acción rápida</p>
-              <h2 className="text-xl font-semibold dark:text-slate-50 text-slate-900">Crear pedido rápido</h2>
-              <p className="mt-1 text-sm dark:text-slate-400 text-slate-600">
+        <article className="group relative overflow-hidden rounded-3xl border-2 border-[#25354B]/50 bg-gradient-to-br from-[#1B2A40]/80 via-[#25354B]/50 to-[#1B2A40]/80 p-6 backdrop-blur-md transition-all duration-300 hover:border-[#4C89D9]/50 hover:shadow-xl hover:shadow-[#4C89D9]/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#4C89D9]/5 via-transparent to-[#60C2D8]/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="relative flex items-center justify-between gap-4">
+            <div className="flex-1">
+              <p className="text-xs uppercase tracking-widest text-[#8FA1B7] font-medium">Acción rápida</p>
+              <h2 className="mt-2 text-xl font-extrabold text-[#F2F5FA]">Crear pedido rápido</h2>
+              <p className="mt-2 text-sm text-[#BFC7D3] leading-relaxed">
                 Inicia un pedido tipo walk-in con pocos clics.
               </p>
             </div>
-            <Button size="icon" variant="secondary" className="h-10 w-10 bg-sky-500/10 text-sky-600 hover:bg-sky-500/20 dark:bg-sky-500/20 dark:text-sky-200">
-              <Link href="/staff/walk-in" className="flex h-full w-full items-center justify-center">
-                <Plus className="h-5 w-5" />
-              </Link>
-            </Button>
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#4C89D9]/20 to-[#60C2D8]/20 border border-[#4C89D9]/30 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl group-hover:shadow-[#4C89D9]/30">
+              <Plus className="h-7 w-7 text-[#4C89D9]" />
+            </div>
           </div>
-          <div className="mt-4 flex gap-3">
-            <Button asChild className="bg-sky-500 text-white hover:bg-sky-600">
+          <div className="relative mt-6 flex gap-3">
+            <Button asChild className="bg-gradient-to-r from-[#4C89D9] to-[#60C2D8] text-white shadow-lg shadow-[#4C89D9]/30 hover:shadow-xl hover:shadow-[#4C89D9]/40 hover:scale-105 transition-all duration-300">
               <Link href="/staff/walk-in">Crear pedido</Link>
             </Button>
-            <Button asChild variant="outline" className="dark:border-slate-700 border-slate-300 dark:bg-transparent bg-white dark:text-slate-300 text-slate-700">
+            <Button asChild variant="outline" className="border-2 border-[#25354B] bg-transparent text-[#BFC7D3] hover:border-[#4C89D9]/50 hover:bg-[#25354B]/50 hover:text-[#F2F5FA] transition-all duration-300">
               <Link href="/staff/pedidos">Ver pedidos</Link>
             </Button>
           </div>
         </article>
 
-        <article className="rounded-3xl border dark:border-white/10 border-slate-200 dark:bg-slate-900/70 bg-white/80 p-6">
-          <div className="flex items-center justify-between">
+        <article className="group relative overflow-hidden rounded-3xl border-2 border-[#25354B]/50 bg-gradient-to-br from-[#1B2A40]/80 via-[#25354B]/50 to-[#1B2A40]/80 p-6 backdrop-blur-md transition-all duration-300 hover:border-[#4C89D9]/50 hover:shadow-xl hover:shadow-[#4C89D9]/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#4C89D9]/5 via-transparent to-[#60C2D8]/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="relative flex items-center justify-between">
             <div>
-              <p className="text-xs uppercase tracking-wide dark:text-slate-500 text-slate-600">Servicios</p>
-              <h2 className="text-xl font-semibold dark:text-slate-50 text-slate-900">Catálogo activo</h2>
+              <p className="text-xs uppercase tracking-widest text-[#8FA1B7] font-medium">Servicios</p>
+              <h2 className="mt-2 text-xl font-extrabold text-[#F2F5FA]">Catálogo activo</h2>
             </div>
-            <Package2 className="h-8 w-8 dark:text-slate-400 text-slate-600" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#6DF2A4]/20 to-[#60C2D8]/20 border border-[#6DF2A4]/30 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl group-hover:shadow-[#6DF2A4]/30">
+              <Package2 className="h-6 w-6 text-[#6DF2A4]" />
+            </div>
           </div>
-          <div className="mt-4 space-y-3">
+          <div className="relative mt-6 space-y-3">
             {serviciosQuery.isLoading ? (
-              <p className="text-sm dark:text-slate-400 text-slate-600">Cargando servicios…</p>
+              <p className="text-sm text-[#BFC7D3]">Cargando servicios…</p>
             ) : serviciosQuery.data && serviciosQuery.data.length > 0 ? (
               serviciosQuery.data.map((servicio) => (
                 <div
                   key={servicio.id}
-                  className="flex items-center justify-between rounded-2xl border dark:border-white/5 border-slate-200 dark:bg-slate-950/60 bg-slate-50 px-4 py-3"
+                  className="flex items-center justify-between rounded-2xl border border-[#25354B]/30 bg-[#25354B]/30 px-4 py-3 transition-all duration-300 hover:border-[#4C89D9]/50 hover:bg-[#25354B]/50 hover:shadow-md hover:shadow-[#4C89D9]/10"
                 >
-                  <div>
-                    <p className="text-sm font-semibold dark:text-slate-100 text-slate-900">{servicio.nombre}</p>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-[#F2F5FA]">{servicio.nombre}</p>
                     {servicio.descripcion ? (
-                      <p className="text-xs dark:text-slate-500 text-slate-600">{servicio.descripcion}</p>
+                      <p className="mt-1 text-xs text-[#8FA1B7]">{servicio.descripcion}</p>
                     ) : null}
                   </div>
-                  <p className="text-sm font-semibold dark:text-slate-100 text-slate-900">
+                  <p className="ml-4 text-sm font-bold bg-gradient-to-r from-[#4C89D9] to-[#60C2D8] bg-clip-text text-transparent">
                     {currencyFormatterPrecise.format(servicio.precio)}
-                    {servicio.unidad ? <span className="text-xs dark:text-slate-500 text-slate-600"> / {servicio.unidad}</span> : null}
+                    {servicio.unidad ? <span className="text-xs text-[#8FA1B7] font-normal"> / {servicio.unidad}</span> : null}
                   </p>
                 </div>
               ))
             ) : (
-              <p className="text-sm dark:text-slate-400 text-slate-600">No hay servicios activos aún.</p>
+              <p className="text-sm text-[#BFC7D3]">No hay servicios activos aún.</p>
             )}
           </div>
-          <div className="mt-4">
-            <Button asChild variant="outline" className="dark:border-slate-700 border-slate-300 dark:bg-transparent bg-white dark:text-slate-300 text-slate-700">
+          <div className="relative mt-6">
+            <Button asChild variant="outline" className="border-2 border-[#25354B] bg-transparent text-[#BFC7D3] hover:border-[#4C89D9]/50 hover:bg-[#25354B]/50 hover:text-[#F2F5FA] transition-all duration-300">
               <Link href="/staff/catalogo">Gestionar servicios</Link>
             </Button>
           </div>
         </article>
       </div>
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
-        <div className="flex flex-wrap items-center gap-4">
+      <div className="group relative overflow-hidden rounded-3xl border-2 border-[#25354B]/50 bg-gradient-to-br from-[#1B2A40]/80 via-[#25354B]/50 to-[#1B2A40]/80 p-6 backdrop-blur-md transition-all duration-300 hover:border-[#4C89D9]/50 hover:shadow-xl hover:shadow-[#4C89D9]/20">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#4C89D9]/5 via-transparent to-[#60C2D8]/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="relative flex flex-wrap items-center gap-4">
           <div className="relative flex-1 min-w-[240px]">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8FA1B7] transition-colors duration-300 group-hover:text-[#4C89D9]" />
             <input
               type="search"
               placeholder="Buscar pedidos por número, cliente o teléfono"
-              className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500 dark:border-white/10 dark:bg-slate-950/60 dark:text-slate-100"
+              className="w-full rounded-2xl border-2 border-[#25354B]/50 bg-[#25354B]/30 py-3.5 pl-12 pr-4 text-sm text-[#F2F5FA] placeholder:text-[#8FA1B7] transition-all duration-300 focus:border-[#4C89D9] focus:bg-[#25354B]/50 focus:outline-none focus:ring-2 focus:ring-[#4C89D9]/20"
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
             />
           </div>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-[#8FA1B7] font-medium">
             Este buscador aplica a las tarjetas de pedidos pendientes y en proceso.
           </p>
         </div>
@@ -303,8 +332,9 @@ export default function StaffHomePage() {
       </div>
 
       {resumenError ? (
-        <div className="rounded-3xl border border-rose-500/40 bg-rose-500/10 p-4 text-sm dark:text-rose-200 text-rose-700">
-          No pudimos cargar el resumen de pedidos. Intenta recargar la página.
+        <div className="group relative overflow-hidden rounded-3xl border-2 border-[#FF8B6B]/40 bg-gradient-to-br from-[#FF8B6B]/10 via-[#FF8B6B]/5 to-[#FF8B6B]/10 p-5 text-sm text-[#FF8B6B] backdrop-blur-sm transition-all duration-300 hover:border-[#FF8B6B]/60 hover:shadow-xl hover:shadow-[#FF8B6B]/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#FF8B6B]/5 via-transparent to-[#FF8B6B]/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+          <p className="relative font-semibold">No pudimos cargar el resumen de pedidos. Intenta recargar la página.</p>
         </div>
       ) : null}
     </section>
@@ -331,25 +361,30 @@ function PedidoListCard({ title, description, query, emptyMessage, estado, searc
       href={`/staff/pedidos?estado=${estado}`}
       className="group block h-full"
     >
-      <article className="flex h-full flex-col gap-4 rounded-3xl border dark:border-white/10 border-slate-200 dark:bg-slate-900/70 bg-white/80 p-5 transition-all duration-300 hover:border-sky-500/50 hover:shadow-lg hover:shadow-sky-500/10 hover:scale-[1.02] active:scale-[0.98] cursor-pointer">
-        <header className="flex items-center justify-between">
+      <article className="group relative overflow-hidden flex h-full flex-col gap-4 rounded-3xl border-2 border-[#25354B]/60 bg-gradient-to-br from-[#1B2A40]/80 via-[#25354B]/50 to-[#1B2A40]/80 p-6 backdrop-blur-md transition-all duration-500 hover:border-[#4C89D9] hover:bg-gradient-to-br hover:from-[#1B2A40] hover:via-[#25354B]/70 hover:to-[#1B2A40] hover:shadow-[0_0_40px_rgba(76,137,217,0.4)] hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98] cursor-pointer">
+        {/* Animated gradient overlay */}
+        <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#4C89D9]/10 via-[#60C2D8]/5 to-[#4C89D9]/10 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+        {/* Glow effect */}
+        <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-[#4C89D9]/20 via-[#60C2D8]/20 to-[#4C89D9]/20 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
+        
+        <header className="relative flex items-center justify-between">
           <div>
-            <p className="text-xs uppercase tracking-wide dark:text-slate-500 text-slate-600">{title}</p>
-            <h2 className="text-lg font-semibold dark:text-slate-100 text-slate-900">{description}</h2>
+            <p className="text-xs uppercase tracking-widest text-[#8FA1B7] font-medium">{title}</p>
+            <h2 className="mt-2 text-lg font-extrabold text-[#F2F5FA]">{description}</h2>
           </div>
-          <div className="flex items-center gap-2 text-xs dark:text-slate-300 text-slate-700 transition-all duration-300 group-hover:text-sky-300">
+          <div className="flex items-center gap-2 rounded-xl bg-[#4C89D9]/10 px-3 py-1.5 text-xs font-semibold text-[#4C89D9] transition-all duration-300 group-hover:bg-[#4C89D9]/20 group-hover:text-[#60C2D8] group-hover:scale-105">
             <span>Ver todos</span>
-            <ArrowRight className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-1" />
+            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
           </div>
         </header>
 
         <div className="flex-1 space-y-3">
           {query.isLoading ? (
-            <div className="flex items-center gap-3 text-sm dark:text-slate-400 text-slate-600">
+            <div className="flex items-center gap-3 text-sm text-[#BFC7D3]">
               <Loader2 className="h-4 w-4 animate-spin" /> Cargando pedidos…
             </div>
           ) : noResults ? (
-            <div className="flex flex-col items-center justify-center py-8 text-center text-sm text-slate-500 dark:text-slate-400">
+            <div className="flex flex-col items-center justify-center py-8 text-center text-sm text-[#8FA1B7]">
               {hasSearch ? (
                 <p className="mb-3">
                   No encontramos pedidos que coincidan con “{searchTerm?.trim()}” en esta sección.
@@ -357,7 +392,7 @@ function PedidoListCard({ title, description, query, emptyMessage, estado, searc
               ) : (
                 <p className="mb-3">{emptyMessage}</p>
               )}
-              <div className="flex items-center gap-2 text-sm bg-sky-500 text-white px-4 py-2 rounded-lg shadow-lg shadow-sky-500/30">
+              <div className="flex items-center gap-2 text-sm bg-gradient-to-r from-[#4C89D9] to-[#60C2D8] text-white px-4 py-2.5 rounded-xl shadow-lg shadow-[#4C89D9]/30 transition-all duration-300 hover:shadow-xl hover:shadow-[#4C89D9]/40 hover:scale-105">
                 <span>Ver pedidos {title.toLowerCase()}</span>
                 <ArrowRight className="h-4 w-4" />
               </div>
@@ -368,7 +403,7 @@ function PedidoListCard({ title, description, query, emptyMessage, estado, searc
                 <PedidoRow key={pedido.id} pedido={pedido} />
               ))}
               <li>
-                <div className="w-full flex items-center justify-center gap-2 bg-sky-500 text-white px-4 py-3 rounded-lg transition-all duration-300 hover:bg-sky-600 shadow-lg shadow-sky-500/30">
+                <div className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#4C89D9] to-[#60C2D8] text-white px-4 py-3 rounded-xl transition-all duration-300 hover:shadow-xl hover:shadow-[#4C89D9]/40 hover:scale-105 shadow-lg shadow-[#4C89D9]/30">
                   <span>Ver todos los {title.toLowerCase()}</span>
                   <ArrowRight className="h-4 w-4" />
                 </div>
@@ -413,21 +448,21 @@ function PedidoRow({ pedido }: PedidoRowProps) {
   const config = estadoConfig[pedido.estado];
 
   return (
-    <li className="flex items-start justify-between gap-4 rounded-2xl border dark:border-white/10 border-slate-200 dark:bg-slate-900/70 bg-white/80 px-6 py-5 shadow-sm">
-      <div className="space-y-1">
-        <h2 className="text-lg font-semibold dark:text-slate-100 text-slate-900">Pedido #{pedido.id.slice(0, 6)}</h2>
-        <p className="text-xs dark:text-slate-500 text-slate-600">Recepción: {fecha}</p>
+    <li className="group/item flex items-start justify-between gap-4 rounded-2xl border-2 border-[#25354B]/50 bg-gradient-to-br from-[#1B2A40]/60 to-[#25354B]/40 px-6 py-5 shadow-sm transition-all duration-300 hover:border-[#4C89D9]/50 hover:bg-gradient-to-br hover:from-[#1B2A40] hover:to-[#25354B]/60 hover:shadow-lg hover:shadow-[#4C89D9]/20 hover:-translate-y-0.5">
+      <div className="space-y-1.5 flex-1">
+        <h2 className="text-base font-extrabold text-[#F2F5FA]">Pedido #{pedido.id.slice(0, 6)}</h2>
+        <p className="text-xs text-[#8FA1B7] font-medium">Recepción: {fecha}</p>
         {pedido.notas ? (
-          <p className="text-xs dark:text-slate-400 text-slate-600">Notas: {pedido.notas}</p>
+          <p className="text-xs text-[#BFC7D3] leading-relaxed">Notas: {pedido.notas}</p>
         ) : null}
         {pedido.readyAt ? (
-          <p className="text-xs dark:text-slate-500 text-slate-600">Listo desde: {new Date(pedido.readyAt).toLocaleDateString('es-MX')}</p>
+          <p className="text-xs text-[#8FA1B7]">Listo desde: {new Date(pedido.readyAt).toLocaleDateString('es-MX')}</p>
         ) : null}
         {pedido.deliveredAt ? (
-          <p className="text-xs dark:text-slate-500 text-slate-600">Entregado: {new Date(pedido.deliveredAt).toLocaleDateString('es-MX')}</p>
+          <p className="text-xs text-[#8FA1B7]">Entregado: {new Date(pedido.deliveredAt).toLocaleDateString('es-MX')}</p>
         ) : null}
       </div>
-      <Badge className={`${config.className} text-xs font-semibold capitalize`}>{config.label}</Badge>
+      <Badge className={`${config.className} text-xs font-bold capitalize px-3 py-1.5 shadow-sm transition-all duration-300 group-hover/item:scale-105`}>{config.label}</Badge>
     </li>
   );
 }

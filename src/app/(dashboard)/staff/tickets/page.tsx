@@ -163,47 +163,46 @@ Generado manualmente por el encargado desde el panel de tickets.
   return (
     <section className="space-y-6">
       <header className="space-y-1">
-        <p className="text-xs uppercase tracking-widest dark:text-slate-500 text-slate-600">Dashboard ▸ Tickets</p>
-        <h1 className="text-3xl font-semibold dark:text-slate-50 text-slate-900">Tickets Digitales</h1>
-        <p className="text-sm dark:text-slate-400 text-slate-600">
+        <h1 className="text-3xl font-semibold text-[#F2F5FA]">Tickets Digitales</h1>
+        <p className="text-sm text-[#BFC7D3]">
           Genera y descarga tickets digitales para los pedidos de tu lavandería.
         </p>
       </header>
 
       {sinPedidosDisponible ? (
-        <div className="rounded-3xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-100">
+        <div className="rounded-3xl border border-[#FFD97B]/40 bg-[#FFD97B]/10 p-5 text-sm text-[#FFD97B]">
           Este cliente aún no tiene tickets generados porque no cuenta con pedidos previos. Crea su primer pedido desde
           walk-in o espera a que el sistema sincronice nuevos pedidos para poder descargar su ticket.
         </div>
       ) : null}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="dark:border-white/10 border-slate-200 dark:bg-slate-900/70 bg-white/80">
+        <Card className="border-[#25354B]/50 bg-[#1B2A40]/60">
           <CardHeader>
-            <CardTitle className="dark:text-slate-100 text-slate-900">Generar Nuevo Ticket</CardTitle>
+            <CardTitle className="text-[#F2F5FA]">Generar Nuevo Ticket</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="pedidoId" className="text-sm dark:text-slate-200 text-slate-700">
+              <Label htmlFor="pedidoId" className="text-sm text-[#BFC7D3]">
                 Buscar Pedido
               </Label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 dark:text-slate-400 text-slate-500" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8FA1B7]" />
                 <Input
                   id="pedidoId"
                   type="text"
                   placeholder="Ingresa el ID del pedido o busca por número"
                   value={pedidoId}
                   onChange={(e) => setPedidoId(e.target.value)}
-                  className="pl-10 dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-100 border-slate-300 bg-white text-slate-900"
+                  className="pl-10 border-[#25354B]/50 bg-[#25354B]/30 text-[#F2F5FA]"
                 />
               </div>
               {pedidoId && pedidosQuery.isLoading && (
-                <p className="text-xs dark:text-slate-400 text-slate-600">Buscando pedidos...</p>
+                <p className="text-xs text-[#BFC7D3]">Buscando pedidos...</p>
               )}
               {pedidoId && pedidosQuery.data && pedidosQuery.data.length > 0 && (
                 <div className="mt-2 space-y-2">
-                  <p className="text-xs dark:text-slate-400 text-slate-600">Pedidos encontrados:</p>
+                  <p className="text-xs text-[#BFC7D3]">Pedidos encontrados:</p>
                   <div className="space-y-1 max-h-40 overflow-y-auto">
                     {pedidosQuery.data.slice(0, 5).map((pedido) => (
                       <button
@@ -211,8 +210,8 @@ Generado manualmente por el encargado desde el panel de tickets.
                         onClick={() => setPedidoId(pedido.id)}
                         className={`w-full text-left rounded-xl border px-3 py-2 text-sm transition ${
                           pedidoSeleccionado?.id === pedido.id
-                            ? 'border-sky-500 bg-sky-500/10 dark:text-sky-200 text-sky-700'
-                            : 'dark:border-white/10 dark:bg-slate-950/60 dark:text-slate-300 border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-900/80'
+                            ? 'border-[#4C89D9] bg-[#4C89D9]/10 text-[#4C89D9]'
+                            : 'border-[#25354B]/50 bg-[#25354B]/30 text-[#BFC7D3] hover:bg-[#25354B]/50'
                         }`}
                         >
                           <div className="flex items-center justify-between">
@@ -235,9 +234,9 @@ Generado manualmente por el encargado desde el panel de tickets.
             </div>
 
             {pedidoSeleccionado && (
-              <div className="rounded-2xl border border-sky-500/30 bg-sky-500/10 dark:bg-sky-500/10 p-4 space-y-2">
-                <p className="text-sm font-semibold dark:text-sky-200 text-sky-700">Pedido seleccionado:</p>
-                <div className="text-xs dark:text-slate-300 text-slate-700 space-y-1">
+              <div className="rounded-2xl border border-[#4C89D9]/30 bg-[#4C89D9]/10 p-4 space-y-2">
+                <p className="text-sm font-semibold text-[#4C89D9]">Pedido seleccionado:</p>
+                <div className="text-xs text-[#BFC7D3] space-y-1">
                   <p>ID: {pedidoSeleccionado.id.slice(0, 8).toUpperCase()}</p>
                   <p>Cliente: {pedidoSeleccionado.clienteNombre || 'Mostrador'}</p>
                   <p>
@@ -254,7 +253,7 @@ Generado manualmente por el encargado desde el panel de tickets.
             <Button
               onClick={() => generateTicket()}
               disabled={isGenerating || !pedidoSeleccionado}
-              className="w-full bg-sky-500 text-white hover:bg-sky-600"
+              className="w-full bg-[#4C89D9] text-white hover:bg-[#4C89D9]/80"
             >
               {isGenerating ? (
                 <>
@@ -271,9 +270,9 @@ Generado manualmente por el encargado desde el panel de tickets.
           </CardContent>
         </Card>
 
-        <Card className="dark:border-white/10 border-slate-200 dark:bg-slate-900/70 bg-white/80">
+        <Card className="border-[#25354B]/50 bg-[#1B2A40]/60">
           <CardHeader>
-            <CardTitle className="dark:text-slate-100 text-slate-900">Pedidos Recientes</CardTitle>
+            <CardTitle className="text-[#F2F5FA]">Pedidos Recientes</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2 mb-4">
@@ -282,35 +281,35 @@ Generado manualmente por el encargado desde el panel de tickets.
                 placeholder="Buscar por cliente, teléfono o pedido..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-100 border-slate-300 bg-white text-slate-900"
+                className="border-[#25354B]/50 bg-[#25354B]/30 text-[#F2F5FA]"
               />
             </div>
             <div className="space-y-2 max-h-96 overflow-y-auto">
               {pedidosQuery.isLoading ? (
                 <div className="flex items-center justify-center py-8">
-                  <Loader2 className="h-5 w-5 animate-spin dark:text-slate-400 text-slate-600" />
+                  <Loader2 className="h-5 w-5 animate-spin text-[#8FA1B7]" />
                 </div>
               ) : pedidosRecientes.length === 0 ? (
-                <p className="text-sm text-center py-8 dark:text-slate-400 text-slate-600">No hay pedidos disponibles</p>
+                <p className="text-sm text-center py-8 text-[#BFC7D3]">No hay pedidos disponibles</p>
               ) : (
                 pedidosRecientes.map((pedido) => (
                   <div
                     key={pedido.id}
-                    className="flex items-center justify-between rounded-xl border dark:border-white/10 border-slate-200 dark:bg-slate-950/60 bg-slate-50 px-4 py-3"
+                    className="flex items-center justify-between rounded-xl border border-[#25354B]/50 bg-[#25354B]/30 px-4 py-3"
                   >
                     <div>
-                      <p className="text-sm font-semibold dark:text-slate-100 text-slate-900">
+                      <p className="text-sm font-semibold text-[#F2F5FA]">
                         Pedido #{pedido.id.slice(0, 8).toUpperCase()}
                       </p>
-                      <p className="text-xs dark:text-slate-400 text-slate-600">
+                      <p className="text-xs text-[#BFC7D3]">
                         {new Date(pedido.createdAt).toLocaleDateString('es-MX')}
                       </p>
-                      <p className="text-xs dark:text-slate-400 text-slate-600">
+                      <p className="text-xs text-[#BFC7D3]">
                         Cliente: {pedido.clienteNombre ?? 'Mostrador'}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-semibold dark:text-slate-100 text-slate-900">
+                      <p className="text-sm font-semibold text-[#F2F5FA]">
                         {new Intl.NumberFormat('es-MX', {
                           style: 'currency',
                           currency: 'MXN',
@@ -321,7 +320,7 @@ Generado manualmente por el encargado desde el panel de tickets.
                         variant="outline"
                         onClick={() => generateTicket(pedido)}
                         disabled={isGenerating}
-                        className="dark:border-slate-700 border-slate-300"
+                        className="border-[#25354B]"
                       >
                         <Download className="h-3 w-3" />
                       </Button>
@@ -334,16 +333,16 @@ Generado manualmente por el encargado desde el panel de tickets.
         </Card>
       </div>
 
-      <Card className="dark:border-white/10 border-slate-200 dark:bg-slate-900/70 bg-white/80">
+      <Card className="border-[#25354B]/50 bg-[#1B2A40]/60">
         <CardHeader>
-          <CardTitle className="dark:text-slate-100 text-slate-900">Crear ticket manual</CardTitle>
-          <p className="text-sm dark:text-slate-400 text-slate-600">
+          <CardTitle className="text-[#F2F5FA]">Crear ticket manual</CardTitle>
+          <p className="text-sm text-[#BFC7D3]">
             Úsalo cuando necesites entregar un comprobante rápido aunque el pedido aún no aparezca en el sistema.
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="manualCliente" className="text-sm dark:text-slate-200 text-slate-700">
+            <Label htmlFor="manualCliente" className="text-sm text-[#BFC7D3]">
               Nombre del cliente
             </Label>
             <Input
@@ -351,11 +350,11 @@ Generado manualmente por el encargado desde el panel de tickets.
               placeholder="Ej. Carla Ramírez"
               value={manualCliente}
               onChange={(event) => setManualCliente(event.target.value)}
-              className="dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-100 border-slate-300 bg-white text-slate-900"
+              className="border-[#25354B]/50 bg-[#25354B]/30 text-[#F2F5FA]"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="manualTotal" className="text-sm dark:text-slate-200 text-slate-700">
+            <Label htmlFor="manualTotal" className="text-sm text-[#BFC7D3]">
               Total estimado (MXN)
             </Label>
             <Input
@@ -366,24 +365,24 @@ Generado manualmente por el encargado desde el panel de tickets.
               placeholder="0.00"
               value={manualTotal}
               onChange={(event) => setManualTotal(event.target.value)}
-              className="dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-100 border-slate-300 bg-white text-slate-900"
+              className="border-[#25354B]/50 bg-[#25354B]/30 text-[#F2F5FA]"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="manualNotas" className="text-sm dark:text-slate-200 text-slate-700">
+            <Label htmlFor="manualNotas" className="text-sm text-[#BFC7D3]">
               Notas para el ticket
             </Label>
             <textarea
               id="manualNotas"
               placeholder="Detalle de prendas, instrucciones o comentarios."
               rows={4}
-              className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500 dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-100"
+              className="w-full rounded-2xl border border-[#25354B]/50 bg-[#25354B]/30 px-4 py-3 text-sm text-[#F2F5FA] placeholder:text-[#8FA1B7] focus:border-[#4C89D9] focus:outline-none focus:ring-1 focus:ring-[#4C89D9]"
               value={manualNotas}
               onChange={(event) => setManualNotas(event.target.value)}
             />
           </div>
           <Button
-            className="w-full bg-sky-600 text-white hover:bg-sky-700"
+            className="w-full bg-[#4C89D9] text-white hover:bg-[#4C89D9]/80"
             onClick={handleManualTicket}
             disabled={isManualGenerating}
           >
@@ -402,13 +401,13 @@ Generado manualmente por el encargado desde el panel de tickets.
         </CardContent>
       </Card>
 
-      <Card className="dark:border-white/10 border-slate-200 dark:bg-slate-900/70 bg-white/80">
+      <Card className="border-[#25354B]/50 bg-[#1B2A40]/60">
         <CardContent className="pt-6">
-          <div className="flex items-start gap-3 rounded-2xl border dark:border-white/10 border-slate-200 dark:bg-slate-950/60 bg-slate-50 p-4">
-            <FileText className="h-5 w-5 dark:text-sky-400 text-sky-600 mt-0.5 flex-shrink-0" />
+          <div className="flex items-start gap-3 rounded-2xl border border-[#25354B]/50 bg-[#25354B]/30 p-4">
+            <FileText className="h-5 w-5 text-[#4C89D9] mt-0.5 flex-shrink-0" />
             <div className="space-y-1">
-              <p className="text-sm font-semibold dark:text-slate-100 text-slate-900">Información</p>
-              <p className="text-xs dark:text-slate-400 text-slate-600">
+              <p className="text-sm font-semibold text-[#F2F5FA]">Información</p>
+              <p className="text-xs text-[#BFC7D3]">
                 Los tickets digitales incluyen toda la información del pedido y se descargan en formato de texto.
                 Puedes imprimirlos o compartirlos digitalmente con tus clientes.
               </p>

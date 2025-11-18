@@ -102,7 +102,6 @@ export default function PedidoDetallePage() {
         <Button variant="ghost" className="text-slate-300" onClick={() => router.back()}>
           <ArrowLeft className="mr-2 h-4 w-4" /> Regresar
         </Button>
-        <p className="text-xs text-slate-500">Dashboard ▸ Pedidos ▸ Pedido {pedido.id.slice(0, 6)}</p>
       </div>
 
       <header className="flex flex-wrap items-center justify-between gap-4">

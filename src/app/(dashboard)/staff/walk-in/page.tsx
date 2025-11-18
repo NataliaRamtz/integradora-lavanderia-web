@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Minus, Plus, ArrowLeft, Loader2 } from "lucide-react";
+import { Minus, Plus, ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,10 @@ export default function WalkInPage() {
   const [cantidades, setCantidades] = useState<Record<string, number>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{
+    clienteNombre?: string;
+    clienteTelefono?: string;
+  }>({});
 
   const serviciosQuery = useServiciosResumen(lavanderiaId, { limit: 50 });
   const createPedido = useCreateWalkInPedido();
@@ -74,9 +78,24 @@ export default function WalkInPage() {
     event.preventDefault();
     setFormError(null);
     setFormSuccess(null);
+    setFieldErrors({});
 
     if (!lavanderiaId) {
       setFormError("No se ha seleccionado una lavandería activa.");
+      return;
+    }
+
+    const errors: typeof fieldErrors = {};
+    if (!clienteNombre.trim()) {
+      errors.clienteNombre = "El nombre del cliente es obligatorio.";
+    }
+    if (!clienteTelefono.trim()) {
+      errors.clienteTelefono = "El teléfono es obligatorio.";
+    }
+    setFieldErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      setFormError("Por favor, completa los campos obligatorios.");
       return;
     }
 
@@ -85,13 +104,16 @@ export default function WalkInPage() {
       return;
     }
 
+    const nombreSafe = clienteNombre.trim();
+    const telefonoSafe = clienteTelefono.trim();
+
     try {
       await createPedido.mutateAsync({
         lavanderiaId,
         createdBy: user?.id,
         createdByRoleId: activeRole?.id ?? null,
-        clienteNombre: clienteNombre.trim() || undefined,
-        clienteTelefono: clienteTelefono.trim() || undefined,
+        clienteNombre: nombreSafe,
+        clienteTelefono: telefonoSafe,
         notas: notas.trim() || undefined,
         items: itemsSeleccionados.map((item) => ({
           servicioId: item.servicioId,
@@ -106,6 +128,7 @@ export default function WalkInPage() {
       setNotas("");
       setClienteNombre("");
       setClienteTelefono("");
+      setFieldErrors({});
       router.push("/staff/pedidos");
     } catch (error) {
       console.error(error);
@@ -120,10 +143,10 @@ export default function WalkInPage() {
   if (!lavanderiaId) {
     return (
       <section className="space-y-4">
-        <Button variant="ghost" className="text-slate-600 hover:text-slate-900 dark:text-slate-300" onClick={() => router.back()}>
+        <Button variant="ghost" className="text-[#BFC7D3] hover:text-[#F2F5FA]" onClick={() => router.back()}>
           <ArrowLeft className="mr-2 h-4 w-4" /> Regresar
         </Button>
-        <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 px-6 py-12 text-center text-sm text-slate-600 dark:border-white/10 dark:bg-slate-900/70 dark:text-slate-400">
+        <div className="rounded-3xl border border-dashed border-[#25354B]/50 bg-[#1B2A40]/60 px-6 py-12 text-center text-sm text-[#BFC7D3]">
           Debes tener una lavandería activa para crear pedidos.
         </div>
       </section>
@@ -133,80 +156,123 @@ export default function WalkInPage() {
   return (
     <section className="space-y-6">
       <div className="flex items-center justify-between">
-        <Button variant="ghost" className="text-slate-600 hover:text-slate-900 dark:text-slate-300" onClick={() => router.back()}>
+        <Button variant="ghost" className="text-[#BFC7D3] hover:text-[#F2F5FA]" onClick={() => router.back()}>
           <ArrowLeft className="mr-2 h-4 w-4" /> Regresar
         </Button>
-        <p className="text-xs text-slate-500">Dashboard ▸ Pedidos ▸ Crear walk-in</p>
       </div>
 
-      <header className="space-y-1">
-        <h1 className="text-3xl font-semibold text-slate-900 dark:text-slate-50">Crear pedido walk-in</h1>
-        <p className="text-sm text-slate-600 dark:text-slate-400">
+      <header className="space-y-2 mb-2">
+        <h1 className="text-4xl font-extrabold bg-gradient-to-r from-[#F2F5FA] via-[#4C89D9] to-[#60C2D8] bg-clip-text text-transparent">Crear pedido walk-in</h1>
+        <p className="text-sm text-[#BFC7D3] font-medium">
           Registra pedidos de clientes mostrador sin necesidad de cuenta.
         </p>
       </header>
 
       {catalogoVacio ? (
-        <div className="rounded-3xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-100">
-          Debes agregar un catálogo primero para poder registrar pedidos walk-in. Dirígete a{' '}
-          <button
-            type="button"
-            onClick={() => router.push('/staff/catalogo')}
-            className="font-semibold text-sky-700 underline decoration-dotted dark:text-sky-200"
-          >
-            la sección de catálogo
-          </button>{' '}
-          para crear tus servicios.
+        <div className="group relative overflow-hidden rounded-3xl border-2 border-[#FFD97B]/40 bg-gradient-to-br from-[#FFD97B]/10 via-[#FFD97B]/5 to-[#FFD97B]/10 p-6 text-sm text-[#FFD97B] backdrop-blur-sm transition-all duration-300 hover:border-[#FFD97B]/60 hover:shadow-xl hover:shadow-[#FFD97B]/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#FFD97B]/5 via-transparent to-[#FFD97B]/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="relative">
+            <p className="font-bold text-base mb-2">Debes agregar un catálogo primero para poder registrar pedidos walk-in.</p>
+            <p className="leading-relaxed">
+              Dirígete a{' '}
+              <button
+                type="button"
+                onClick={() => router.push('/staff/catalogo')}
+                className="font-bold text-[#60C2D8] underline decoration-2 underline-offset-2 transition-all duration-300 hover:text-[#4C89D9]"
+              >
+                la sección de catálogo
+              </button>{' '}
+              para crear tus servicios.
+            </p>
+          </div>
         </div>
       ) : null}
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-        <section className="grid gap-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-slate-900/70 md:grid-cols-2">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <section className="group relative overflow-hidden grid gap-5 rounded-3xl border-2 border-[#25354B]/50 bg-gradient-to-br from-[#1B2A40]/80 via-[#25354B]/50 to-[#1B2A40]/80 p-6 backdrop-blur-md transition-all duration-300 hover:border-[#4C89D9]/50 hover:shadow-xl hover:shadow-[#4C89D9]/20 md:grid-cols-2">
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#4C89D9]/5 via-transparent to-[#60C2D8]/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
           <div className="space-y-2">
-            <Label htmlFor="clienteNombre">Nombre del cliente</Label>
+            <Label htmlFor="clienteNombre" className="flex items-center gap-1.5">
+              Nombre del cliente <span className="text-[#FF8B6B]">*</span>
+            </Label>
             <Input
               id="clienteNombre"
               placeholder="Ej. Laura González"
               value={clienteNombre}
-              onChange={(event) => setClienteNombre(event.target.value)}
+              onChange={(event) => {
+                setClienteNombre(event.target.value);
+                if (fieldErrors.clienteNombre) {
+                  setFieldErrors((prev) => {
+                    const next = { ...prev };
+                    delete next.clienteNombre;
+                    return next;
+                  });
+                }
+              }}
+              className={fieldErrors.clienteNombre ? "border-[#FF8B6B]/50 focus:border-[#FF8B6B] focus:ring-[#FF8B6B]/20" : ""}
             />
+            {fieldErrors.clienteNombre ? (
+              <div className="flex items-center gap-1.5 text-xs text-[#FF8B6B]">
+                <AlertCircle className="h-3.5 w-3.5" />
+                <span>{fieldErrors.clienteNombre}</span>
+              </div>
+            ) : null}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="clienteTelefono">Teléfono</Label>
+            <Label htmlFor="clienteTelefono" className="flex items-center gap-1.5">
+              Teléfono <span className="text-[#FF8B6B]">*</span>
+            </Label>
             <Input
               id="clienteTelefono"
               placeholder="Ej. +52 55 1234 5678"
               value={clienteTelefono}
-              onChange={(event) => setClienteTelefono(event.target.value)}
+              onChange={(event) => {
+                setClienteTelefono(event.target.value);
+                if (fieldErrors.clienteTelefono) {
+                  setFieldErrors((prev) => {
+                    const next = { ...prev };
+                    delete next.clienteTelefono;
+                    return next;
+                  });
+                }
+              }}
+              className={fieldErrors.clienteTelefono ? "border-[#FF8B6B]/50 focus:border-[#FF8B6B] focus:ring-[#FF8B6B]/20" : ""}
             />
+            {fieldErrors.clienteTelefono ? (
+              <div className="flex items-center gap-1.5 text-xs text-[#FF8B6B]">
+                <AlertCircle className="h-3.5 w-3.5" />
+                <span>{fieldErrors.clienteTelefono}</span>
+              </div>
+            ) : null}
           </div>
           <div className="md:col-span-2 space-y-2">
             <Label htmlFor="notas">Notas adicionales</Label>
             <textarea
               id="notas"
               placeholder="Instrucciones especiales, preferencias, etc."
-              className="min-h-[100px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500 dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-100"
+              className="min-h-[100px] w-full rounded-2xl border border-[#25354B]/50 bg-[#25354B]/30 px-4 py-3 text-sm text-[#F2F5FA] placeholder:text-[#8FA1B7] focus:border-[#4C89D9] focus:outline-none focus:ring-1 focus:ring-[#4C89D9]"
               value={notas}
               onChange={(event) => setNotas(event.target.value)}
             />
           </div>
         </section>
 
-        <section className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
-          <header className="flex items-center justify-between">
+        <section className="group relative overflow-hidden space-y-4 rounded-3xl border-2 border-[#25354B]/50 bg-gradient-to-br from-[#1B2A40]/80 via-[#25354B]/50 to-[#1B2A40]/80 p-6 backdrop-blur-md transition-all duration-300 hover:border-[#4C89D9]/50 hover:shadow-xl hover:shadow-[#4C89D9]/20">
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#4C89D9]/5 via-transparent to-[#60C2D8]/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+          <header className="relative flex items-center justify-between">
             <div>
-              <p className="text-xs uppercase tracking-wide text-slate-500">Servicios</p>
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Selecciona los servicios del pedido</h2>
+              <p className="text-xs uppercase tracking-widest text-[#8FA1B7] font-medium">Servicios</p>
+              <h2 className="mt-2 text-lg font-extrabold text-[#F2F5FA]">Selecciona los servicios del pedido</h2>
             </div>
-            <Button asChild variant="outline" className="border-slate-300 bg-white text-xs text-slate-700 dark:border-slate-700 dark:bg-transparent dark:text-slate-300">
+            <Button asChild variant="outline" className="border-2 border-[#25354B] bg-transparent text-xs text-[#BFC7D3] hover:border-[#4C89D9]/50 hover:bg-[#25354B]/50 hover:text-[#F2F5FA] transition-all duration-300">
               <Link href="/staff/catalogo">Gestionar catálogo</Link>
             </Button>
           </header>
 
           {serviciosQuery.isLoading ? (
-            <p className="text-sm text-slate-600 dark:text-slate-400">Cargando servicios…</p>
+            <p className="text-sm text-[#BFC7D3]">Cargando servicios…</p>
           ) : servicios.length === 0 ? (
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-sm text-[#BFC7D3]">
               No tienes servicios activos. Sin catálogo no se pueden crear pedidos nuevos.
             </p>
           ) : (
@@ -216,35 +282,35 @@ export default function WalkInPage() {
                 return (
                   <div
                     key={servicio.id}
-                    className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950/70"
+                    className="group/item relative overflow-hidden flex flex-col gap-3 rounded-2xl border-2 border-[#25354B]/30 bg-gradient-to-br from-[#25354B]/30 to-[#25354B]/20 p-4 transition-all duration-300 hover:border-[#4C89D9]/50 hover:bg-gradient-to-br hover:from-[#25354B]/50 hover:to-[#25354B]/40 hover:shadow-lg hover:shadow-[#4C89D9]/20 hover:-translate-y-0.5"
                   >
-                    <div>
-                      <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{servicio.nombre}</p>
-                      <p className="text-xs text-slate-500">
+                    <div className="flex-1">
+                      <p className="text-sm font-extrabold text-[#F2F5FA]">{servicio.nombre}</p>
+                      <p className="mt-1 text-xs font-bold bg-gradient-to-r from-[#4C89D9] to-[#60C2D8] bg-clip-text text-transparent">
                         {currencyFormatter.format(servicio.precio)}
-                        {servicio.unidad ? ` / ${servicio.unidad}` : ''}
+                        {servicio.unidad ? <span className="text-[#8FA1B7] font-normal"> / {servicio.unidad}</span> : ''}
                       </p>
                       {servicio.descripcion ? (
-                        <p className="mt-1 text-xs text-slate-500">{servicio.descripcion}</p>
+                        <p className="mt-2 text-xs text-[#BFC7D3] leading-relaxed">{servicio.descripcion}</p>
                       ) : null}
                     </div>
                     <div className="flex items-center gap-3">
                       <Button
                         type="button"
                         variant="outline"
-                        className="h-10 w-10 border-2 border-slate-300 bg-white text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:bg-transparent dark:text-slate-300 dark:hover:bg-slate-800"
+                        className="h-12 w-12 border-2 border-[#25354B] bg-transparent text-[#BFC7D3] hover:border-[#FF8B6B]/50 hover:bg-[#FF8B6B]/10 hover:text-[#FF8B6B] transition-all duration-300"
                         onClick={() => handleCantidad(servicio.id, -1)}
                         disabled={cantidad === 0}
                       >
-                        <Minus className="h-5 w-5" />
+                        <Minus className="h-6 w-6" />
                       </Button>
-                      <span className="w-12 text-center text-base font-bold text-slate-900 dark:text-slate-100">{cantidad}</span>
+                      <span className="w-12 text-center text-lg font-extrabold text-[#F2F5FA] bg-gradient-to-br from-[#1B2A40]/60 to-[#25354B]/40 px-2 py-1 rounded-lg">{cantidad}</span>
                       <Button
                         type="button"
-                        className="h-10 w-10 bg-sky-500 text-white hover:bg-sky-600 border-2 border-sky-500"
+                        className="h-12 w-12 bg-gradient-to-r from-[#4C89D9] to-[#60C2D8] text-white hover:shadow-lg hover:shadow-[#4C89D9]/40 hover:scale-105 transition-all duration-300 border-0"
                         onClick={() => handleCantidad(servicio.id, 1)}
                       >
-                        <Plus className="h-5 w-5" />
+                        <Plus className="h-6 w-6" />
                       </Button>
                     </div>
                   </div>
@@ -254,43 +320,46 @@ export default function WalkInPage() {
           )}
         </section>
 
-        <section className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-slate-900/70">
-          <header>
-            <p className="text-xs uppercase tracking-wide text-slate-500">Resumen</p>
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Detalles del pedido</h2>
+        <section className="group relative overflow-hidden space-y-4 rounded-3xl border-2 border-[#25354B]/50 bg-gradient-to-br from-[#1B2A40]/80 via-[#25354B]/50 to-[#1B2A40]/80 p-6 backdrop-blur-md transition-all duration-300 hover:border-[#4C89D9]/50 hover:shadow-xl hover:shadow-[#4C89D9]/20">
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#4C89D9]/5 via-transparent to-[#60C2D8]/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+          <header className="relative">
+            <p className="text-xs uppercase tracking-widest text-[#8FA1B7] font-medium">Resumen</p>
+            <h2 className="mt-2 text-lg font-extrabold text-[#F2F5FA]">Detalles del pedido</h2>
           </header>
 
           {itemsSeleccionados.length === 0 ? (
-            <p className="text-sm text-slate-600 dark:text-slate-400">Selecciona servicios para ver el resumen.</p>
+            <p className="relative text-sm text-[#BFC7D3] font-medium">Selecciona servicios para ver el resumen.</p>
           ) : (
-            <div className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <div className="relative space-y-3 text-sm text-[#BFC7D3]">
               {itemsSeleccionados.map((item) => (
-                <div key={item.servicioId} className="flex items-center justify-between">
-                  <span>
+                <div key={item.servicioId} className="flex items-center justify-between rounded-xl border border-[#25354B]/30 bg-[#25354B]/20 px-4 py-2.5 transition-all duration-300 hover:border-[#4C89D9]/50 hover:bg-[#25354B]/40">
+                  <span className="font-medium text-[#F2F5FA]">
                     {item.nombre}
-                    {item.unidad ? <span className="text-xs text-slate-500"> ({item.unidad})</span> : null} ×{' '}
-                    {item.cantidad}
+                    {item.unidad ? <span className="text-xs text-[#8FA1B7] font-normal"> ({item.unidad})</span> : null} ×{' '}
+                    <span className="text-[#4C89D9]">{item.cantidad}</span>
                   </span>
-                  <span>{currencyFormatter.format(item.subtotal)}</span>
+                  <span className="font-bold text-[#F2F5FA]">{currencyFormatter.format(item.subtotal)}</span>
                 </div>
               ))}
-              <div className="mt-3 flex items-center justify-between text-base font-semibold text-slate-100">
+              <div className="mt-4 flex items-center justify-between rounded-xl border-2 border-[#4C89D9]/30 bg-gradient-to-r from-[#4C89D9]/10 to-[#60C2D8]/10 px-4 py-3 text-base font-extrabold text-[#F2F5FA]">
                 <span>Total a cobrar</span>
-                <span>{currencyFormatter.format(total)}</span>
+                <span className="bg-gradient-to-r from-[#4C89D9] to-[#60C2D8] bg-clip-text text-transparent">{currencyFormatter.format(total)}</span>
               </div>
             </div>
           )}
         </section>
 
         {formError ? (
-          <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-700 dark:text-rose-200">
-            {formError}
+          <div className="group relative overflow-hidden rounded-2xl border-2 border-[#FF8B6B]/40 bg-gradient-to-br from-[#FF8B6B]/10 via-[#FF8B6B]/5 to-[#FF8B6B]/10 px-4 py-3 text-sm text-[#FF8B6B] backdrop-blur-sm transition-all duration-300 hover:border-[#FF8B6B]/60 hover:shadow-xl hover:shadow-[#FF8B6B]/20">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#FF8B6B]/5 via-transparent to-[#FF8B6B]/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            <p className="relative font-semibold">{formError}</p>
           </div>
         ) : null}
 
         {formSuccess ? (
-          <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-200">
-            {formSuccess}
+          <div className="group relative overflow-hidden rounded-2xl border-2 border-[#6DF2A4]/40 bg-gradient-to-br from-[#6DF2A4]/10 via-[#6DF2A4]/5 to-[#6DF2A4]/10 px-4 py-3 text-sm text-[#6DF2A4] backdrop-blur-sm transition-all duration-300 hover:border-[#6DF2A4]/60 hover:shadow-xl hover:shadow-[#6DF2A4]/20">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#6DF2A4]/5 via-transparent to-[#6DF2A4]/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            <p className="relative font-semibold">{formSuccess}</p>
           </div>
         ) : null}
 
@@ -298,7 +367,7 @@ export default function WalkInPage() {
           <Button
             type="submit"
             disabled={createPedido.isPending}
-            className="bg-sky-500 text-white hover:bg-sky-600"
+            className="bg-gradient-to-r from-[#4C89D9] to-[#60C2D8] text-white shadow-lg shadow-[#4C89D9]/30 hover:shadow-xl hover:shadow-[#4C89D9]/40 hover:scale-105 transition-all duration-300"
           >
             {createPedido.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             Registrar pedido
@@ -306,7 +375,7 @@ export default function WalkInPage() {
           <Button
             type="button"
             variant="outline"
-            className="border-slate-300 bg-white text-slate-700 dark:border-slate-700 dark:bg-transparent dark:text-slate-300"
+            className="border-2 border-[#25354B] bg-transparent text-[#BFC7D3] hover:border-[#4C89D9]/50 hover:bg-[#25354B]/50 hover:text-[#F2F5FA] transition-all duration-300"
             onClick={() => router.push('/staff/pedidos')}
           >
             Cancelar

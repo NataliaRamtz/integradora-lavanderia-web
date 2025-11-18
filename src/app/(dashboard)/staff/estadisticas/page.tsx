@@ -59,20 +59,21 @@ export default function EstadisticasPage() {
 
   return (
     <section className="space-y-6">
-      <header className="space-y-1">
-        <p className="text-xs uppercase tracking-widest text-slate-500">Dashboard ▸ Estadísticas</p>
-        <h1 className="text-3xl font-semibold text-slate-900 dark:text-slate-50">Estadísticas y métricas</h1>
-        <p className="text-sm text-slate-600 dark:text-slate-400">
+      <header className="space-y-2 mb-2">
+        <h1 className="text-4xl font-extrabold bg-gradient-to-r from-[#F2F5FA] via-[#4C89D9] to-[#60C2D8] bg-clip-text text-transparent">
+          Estadísticas y métricas
+        </h1>
+        <p className="text-sm text-[#BFC7D3] font-medium">
           Analiza el rendimiento de tu lavandería con indicadores clave, tendencias y servicios más solicitados.
         </p>
       </header>
 
       {isLoading ? (
-        <div className="flex items-center justify-center rounded-3xl border border-slate-200 bg-white py-20 text-slate-600 shadow-sm dark:border-white/10 dark:bg-slate-900/60 dark:text-slate-400">
-          <Loader2 className="mr-3 h-5 w-5 animate-spin" /> Cargando estadísticas…
+        <div className="flex items-center justify-center rounded-3xl border-2 border-[#25354B]/50 bg-gradient-to-br from-[#1B2A40]/80 via-[#25354B]/50 to-[#1B2A40]/80 py-20 text-[#BFC7D3] backdrop-blur-md">
+          <Loader2 className="mr-3 h-5 w-5 animate-spin text-[#4C89D9]" /> Cargando estadísticas…
         </div>
       ) : !data ? (
-        <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 px-6 py-16 text-center text-sm text-slate-600 dark:border-white/10 dark:bg-slate-900/60 dark:text-slate-400">
+        <div className="rounded-3xl border-2 border-dashed border-[#25354B]/50 bg-gradient-to-br from-[#1B2A40]/80 via-[#25354B]/50 to-[#1B2A40]/80 px-6 py-16 text-center text-sm text-[#BFC7D3] backdrop-blur-md">
           No encontramos datos suficientes para mostrar las estadísticas.
         </div>
       ) : (
@@ -105,11 +106,12 @@ export default function EstadisticasPage() {
           </section>
 
           <section className="grid gap-6 xl:grid-cols-[2fr_1fr]">
-            <Card className="border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+            <Card className="group relative overflow-hidden border-2 border-[#25354B]/50 bg-gradient-to-br from-[#1B2A40]/80 via-[#25354B]/50 to-[#1B2A40]/80 shadow-lg shadow-black/20 backdrop-blur-md transition-all duration-300 hover:border-[#4C89D9]/50">
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#4C89D9]/5 via-transparent to-[#60C2D8]/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle className="text-slate-900 dark:text-slate-100">Pedidos completados</CardTitle>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">Compara por semana, mes y año</p>
+                  <CardTitle className="text-[#F2F5FA] text-xl">Pedidos completados</CardTitle>
+                  <p className="text-sm text-[#BFC7D3]">Compara por semana, mes y año</p>
                 </div>
               </CardHeader>
               <CardContent className="grid gap-6 md:grid-cols-3">
@@ -119,9 +121,10 @@ export default function EstadisticasPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+            <Card className="group relative overflow-hidden border-2 border-[#25354B]/50 bg-gradient-to-br from-[#1B2A40]/80 via-[#25354B]/50 to-[#1B2A40]/80 shadow-lg shadow-black/20 backdrop-blur-md transition-all duration-300 hover:border-[#4C89D9]/50">
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#4C89D9]/5 via-transparent to-[#60C2D8]/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               <CardHeader>
-                <CardTitle className="text-slate-900 dark:text-slate-100">Métricas clave</CardTitle>
+                <CardTitle className="text-[#F2F5FA] text-xl">Métricas clave</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <KeyMetric
@@ -139,26 +142,28 @@ export default function EstadisticasPage() {
           </section>
 
           <section className="grid gap-6 lg:grid-cols-2">
-            <Card className="border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+            <Card className="group relative overflow-hidden border-2 border-[#25354B]/50 bg-gradient-to-br from-[#1B2A40]/80 via-[#25354B]/50 to-[#1B2A40]/80 shadow-lg shadow-black/20 backdrop-blur-md transition-all duration-300 hover:border-[#4C89D9]/50">
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#4C89D9]/5 via-transparent to-[#60C2D8]/5 opacity-0 transition-opacity duración-300 group-hover:opacity-100" />
               <CardHeader>
-                <CardTitle className="text-slate-900 dark:text-slate-100">Estado de pedidos</CardTitle>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Distribución actual de pedidos por estado</p>
+                <CardTitle className="text-[#F2F5FA] text-xl">Estado de pedidos</CardTitle>
+                <p className="text-sm text-[#BFC7D3]">Distribución actual de pedidos por estado</p>
               </CardHeader>
               <CardContent className="space-y-4">
                 {Object.entries(data.estadoPedidos).map(([estado, value]) => {
                   const status = estado as PedidoEstado;
                   const percentage = totalEstado > 0 ? Math.round((value / totalEstado) * 100) : 0;
                   return (
-                    <div key={estado} className="space-y-1">
-                      <div className="flex items-center justify-between text-sm text-slate-300">
-                        <span>{estadoLabels[status]}</span>
-                        <span>
-                          {value} ({percentage}%)
+                    <div key={estado} className="space-y-2">
+                      <div className="flex items-center justify-between text-sm text-[#BFC7D3]">
+                        <span className="flex items-center gap-2">
+                          <span className={cn('h-2 w-2 rounded-full', estadoColors[status])} />
+                          {estadoLabels[status]}
                         </span>
+                        <span className="font-semibold text-[#F2F5FA]">{value}</span>
                       </div>
-                      <div className="h-2.5 rounded-full bg-slate-800">
+                      <div className="h-2.5 rounded-full bg-[#0E1624]">
                         <div
-                          className={cn('h-2.5 rounded-full', estadoColors[status])}
+                          className={cn('h-2.5 rounded-full transition-all duration-500', estadoColors[status])}
                           style={{ width: `${percentage}%` }}
                         />
                       </div>
@@ -168,55 +173,57 @@ export default function EstadisticasPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+            <Card className="group relative overflow-hidden border-2 border-[#25354B]/50 bg-gradient-to-br from-[#1B2A40]/80 via-[#25354B]/50 to-[#1B2A40]/80 shadow-lg shadow-black/20 backdrop-blur-md transition-all duration-300 hover:border-[#4C89D9]/50">
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#4C89D9]/5 via-transparent to-[#60C2D8]/5 opacity-0 transition-opacity duración-300 group-hover:opacity-100" />
               <CardHeader>
-                <CardTitle className="text-slate-900 dark:text-slate-100">Ingresos estimados</CardTitle>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Últimos 6 meses</p>
+                <CardTitle className="text-[#F2F5FA] text-xl">Ingresos estimados</CardTitle>
+                <p className="text-sm text-[#BFC7D3]">Últimos 6 meses</p>
               </CardHeader>
               <CardContent className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={data.ingresosMensuales}>
                     <defs>
                       <linearGradient id="colorIngresos" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.6} />
-                        <stop offset="95%" stopColor="#38bdf8" stopOpacity={0.05} />
+                        <stop offset="5%" stopColor="#4C89D9" stopOpacity={0.6} />
+                        <stop offset="95%" stopColor="#4C89D9" stopOpacity={0.05} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                    <XAxis dataKey="month" stroke="#94a3b8" tickLine={false} axisLine={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#25354B" />
+                    <XAxis dataKey="month" stroke="#8FA1B7" tickLine={false} axisLine={false} />
                     <Tooltip
-                      cursor={{ stroke: '#38bdf8', strokeWidth: 1 }}
-                      contentStyle={{ background: '#0f172a', borderRadius: '0.75rem', border: '1px solid #1e293b', color: '#e2e8f0' }}
+                      cursor={{ stroke: '#4C89D9', strokeWidth: 1 }}
+                      contentStyle={{ background: '#1B2A40', borderRadius: '0.75rem', border: '1px solid #25354B', color: '#F2F5FA' }}
                       formatter={(value: number) => currencyFormatter.format(value)}
                     />
-                    <Area type="monotone" dataKey="value" stroke="#38bdf8" fill="url(#colorIngresos)" strokeWidth={2} />
+                    <Area type="monotone" dataKey="value" stroke="#4C89D9" fill="url(#colorIngresos)" strokeWidth={2} />
                   </AreaChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
           </section>
 
-          <Card className="border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+          <Card className="group relative overflow-hidden border-2 border-[#25354B]/50 bg-gradient-to-br from-[#1B2A40]/80 via-[#25354B]/50 to-[#1B2A40]/80 shadow-lg shadow-black/20 backdrop-blur-md transition-all duration-300 hover:border-[#4C89D9]/50">
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#4C89D9]/5 via-transparent to-[#60C2D8]/5 opacity-0 transition-opacity duración-300 group-hover:opacity-100" />
             <CardHeader>
-              <CardTitle className="text-slate-900 dark:text-slate-100">Servicios más solicitados</CardTitle>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Top 5 según cantidad vendida (últimos pedidos)</p>
+              <CardTitle className="text-[#F2F5FA] text-xl">Servicios más solicitados</CardTitle>
+              <p className="text-sm text-[#BFC7D3]">Top 5 según cantidad vendida (últimos pedidos)</p>
             </CardHeader>
             <CardContent className="h-80">
               {data.serviciosFrecuentes.length === 0 ? (
-                <div className="flex h-full items-center justify-center text-sm text-slate-400">
+                <div className="flex h-full items-center justify-center text-sm text-[#8FA1B7]">
                   Aún no hay información suficiente de servicios.
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data.serviciosFrecuentes}>
-                    <CartesianGrid vertical={false} stroke="#1e293b" />
-                    <XAxis dataKey="nombre" stroke="#94a3b8" tickLine={false} axisLine={false} />
+                    <CartesianGrid vertical={false} stroke="#25354B" />
+                    <XAxis dataKey="nombre" stroke="#8FA1B7" tickLine={false} axisLine={false} />
                     <Tooltip
-                      cursor={{ fill: 'rgba(56, 189, 248, 0.1)' }}
-                      contentStyle={{ background: '#0f172a', borderRadius: '0.75rem', border: '1px solid #1e293b', color: '#e2e8f0' }}
+                      cursor={{ fill: 'rgba(76, 137, 217, 0.1)' }}
+                      contentStyle={{ background: '#1B2A40', borderRadius: '0.75rem', border: '1px solid #25354B', color: '#F2F5FA' }}
                       formatter={(value: number) => [`${value} ventas`, 'Cantidad']}
                     />
-                    <Bar dataKey="cantidad" radius={[10, 10, 4, 4]} fill="#38bdf8" />
+                    <Bar dataKey="cantidad" radius={[10, 10, 4, 4]} fill="#4C89D9" />
                   </BarChart>
                 </ResponsiveContainer>
               )}
@@ -237,16 +244,17 @@ type MetricCardProps = {
 
 function MetricCard({ title, value, subtitle, badge }: MetricCardProps) {
   return (
-    <Card className="border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900/70">
-      <CardHeader className="space-y-6">
+    <Card className="group relative overflow-hidden border-2 border-[#25354B]/50 bg-gradient-to-br from-[#1B2A40]/80 via-[#25354B]/50 to-[#1B2A40]/80 shadow-lg shadow-black/20 backdrop-blur-md transition-all duration-300 hover:border-[#4C89D9]/50">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#4C89D9]/5 via-transparent to-[#60C2D8]/5 opacity-0 transition-opacity	duration-300 group-hover:opacity-100" />
+      <CardHeader className="relative space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-slate-600 dark:text-slate-400">{title}</p>
-            <p className="mt-2 text-3xl font-semibold text-slate-900 dark:text-slate-50">{value}</p>
+            <p className="text-xs uppercase tracking-widest text-[#8FA1B7]">{title}</p>
+            <p className="mt-2 text-3xl font-extrabold text-[#F2F5FA]">{value}</p>
           </div>
-          <Badge className="bg-sky-100 text-sky-600 dark:bg-sky-500/15 dark:text-sky-200">{badge}</Badge>
+          <Badge className="bg-[#4C89D9]/20 text-[#4C89D9] border border-[#4C89D9]/30">{badge}</Badge>
         </div>
-        <p className="text-xs text-slate-500 dark:text-slate-500">{subtitle}</p>
+        <p className="text-xs text-[#BFC7D3]">{subtitle}</p>
       </CardHeader>
     </Card>
   );
@@ -259,9 +267,9 @@ type StatBlockProps = {
 
 function StatBlock({ label, value }: StatBlockProps) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-5 dark:border-white/10 dark:bg-slate-950/70">
-      <p className="text-xs uppercase tracking-widest text-slate-500">{label}</p>
-      <p className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-50">{value}</p>
+    <div className="rounded-2xl border border-[#25354B]/40 bg-gradient-to-br from-[#1B2A40]/70 to-[#25354B]/40 px-4 py-5 text-[#F2F5FA] shadow-inner shadow-black/20">
+      <p className="text-xs uppercase tracking-widest text-[#8FA1B7]">{label}</p>
+      <p className="mt-3 text-3xl font-extrabold">{value}</p>
     </div>
   );
 }
@@ -275,14 +283,16 @@ type KeyMetricProps = {
 function KeyMetric({ label, value, variation }: KeyMetricProps) {
   const positive = variation >= 0;
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-5 dark:border-white/10 dark:bg-slate-950/70">
-      <p className="text-xs uppercase tracking-widest text-slate-500">{label}</p>
-      <div className="mt-3 flex items-center justify-between">
-        <p className="text-3xl font-semibold text-slate-900 dark:text-slate-50">{value}</p>
+    <div className="space-y-3 rounded-2xl border border-[#25354B]/40 bg-gradient-to-br from-[#1B2A40]/70 to-[#25354B]/40 px-4 py-5 shadow-inner shadow-black/20">
+      <p className="text-xs uppercase tracking-widest text-[#8FA1B7]">{label}</p>
+      <div className="flex items-center justify-between">
+        <p className="text-3xl font-extrabold text-[#F2F5FA]">{value}</p>
         <span
           className={cn(
-            'inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold',
-            positive ? 'bg-emerald-500/15 text-emerald-200' : 'bg-rose-500/15 text-rose-200'
+            'inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold border',
+            positive
+              ? 'bg-[#6DF2A4]/15 text-[#6DF2A4] border-[#6DF2A4]/30'
+              : 'bg-[#FF8B6B]/15 text-[#FF8B6B] border-[#FF8B6B]/30'
           )}
         >
           {positive ? <ArrowUp className="h-3.5 w-3.5" /> : <ArrowDown className="h-3.5 w-3.5" />}
