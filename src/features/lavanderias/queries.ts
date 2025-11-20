@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-client';
-import { getBrowserClient } from '@/lib/supabase';
 import { fetchLavanderias } from './api';
 
 export type LavanderiaSummary = {

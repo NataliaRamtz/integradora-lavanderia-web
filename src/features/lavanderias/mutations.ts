@@ -4,6 +4,7 @@ import { queryKeys } from '@/lib/query-client';
 import {
   createLavanderia,
   updateLavanderia,
+  deleteLavanderia,
   type AdminUpdateLavanderiaInput,
 } from './api';
 
@@ -26,6 +27,17 @@ export const useUpdateLavanderia = () => {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.lavanderias.lists() });
       queryClient.invalidateQueries({ queryKey: queryKeys.lavanderias.detail(variables.id) });
+    },
+  });
+};
+
+export const useDeleteLavanderia = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteLavanderia,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.lavanderias.lists() });
     },
   });
 };

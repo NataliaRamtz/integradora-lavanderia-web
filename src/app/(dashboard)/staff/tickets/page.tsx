@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Download, FileText, Loader2, Search, Plus } from 'lucide-react';
+import { Download, FileText, Loader2, Search, CheckCircle2, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -9,24 +9,23 @@ import { Label } from '@/components/ui/label';
 import { useSession } from '@/features/auth/session-context';
 import { useLavanderia } from '@/features/lavanderias/queries';
 import { usePedidosList } from '@/features/pedidos/queries';
-import { getBrowserClient } from '@/lib/supabase';
+import { useTickets, useTicketByPedidoId } from '@/features/tickets/queries';
+import { useCreateTicket } from '@/features/tickets/mutations';
 
 export default function TicketsPage() {
   const { activeRole } = useSession();
   const lavanderiaId = activeRole?.lavanderia_id ?? '';
   const { data: lavanderia } = useLavanderia(lavanderiaId);
-  const [isGenerating, setIsGenerating] = useState(false);
   const [pedidoId, setPedidoId] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [manualCliente, setManualCliente] = useState('');
-  const [manualTotal, setManualTotal] = useState('');
-  const [manualNotas, setManualNotas] = useState('');
-  const [isManualGenerating, setIsManualGenerating] = useState(false);
-
+  
   const pedidosQuery = usePedidosList(lavanderiaId, {
     estado: 'todos',
     search: searchTerm,
   });
+
+  const ticketsQuery = useTickets(lavanderiaId);
+  const createTicketMutation = useCreateTicket();
 
   const pedidoSeleccionado = useMemo(() => {
     if (!pedidoId) return null;
@@ -36,17 +35,26 @@ export default function TicketsPage() {
   const pedidosRecientes = useMemo(() => {
     return pedidosQuery.data?.slice(0, 10) ?? [];
   }, [pedidosQuery.data]);
+  
   const sinPedidosDisponible = !pedidosQuery.isLoading && (pedidosQuery.data?.length ?? 0) === 0;
+
+  // Obtener ticket del pedido seleccionado si existe
+  const ticketDelPedido = useTicketByPedidoId(pedidoSeleccionado?.id);
 
   const generateTicket = async (pedido?: typeof pedidoSeleccionado) => {
     const targetPedido = pedido || pedidoSeleccionado;
-    if (!targetPedido) {
+    if (!targetPedido || !lavanderiaId) {
       alert('Por favor selecciona un pedido válido');
       return;
     }
 
-    setIsGenerating(true);
     try {
+      // Crear o actualizar ticket en el backend
+      const { ticket, pin } = await createTicketMutation.mutateAsync({
+        pedidoId: targetPedido.id,
+        lavanderiaId,
+      });
+
       const fecha = new Date(targetPedido.createdAt).toLocaleString('es-MX', {
         year: 'numeric',
         month: 'long',
@@ -80,6 +88,13 @@ Total: ${new Intl.NumberFormat('es-MX', {
       }).format(targetPedido.total)}
 
 ─────────────────────────────────────────────────────────
+                    CÓDIGO DE VALIDACIÓN
+─────────────────────────────────────────────────────────
+
+PIN: ${pin}
+Código QR: ${ticket.qr_ref ?? 'N/A'}
+
+─────────────────────────────────────────────────────────
 
 Gracias por su preferencia
 LaundryPro - Sistema de Gestión de Lavanderías
@@ -98,67 +113,66 @@ LaundryPro - Sistema de Gestión de Lavanderías
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error al generar ticket:', error);
-      alert('Error al generar el ticket. Intenta nuevamente.');
-    } finally {
-      setIsGenerating(false);
+      alert(error instanceof Error ? error.message : 'Error al generar el ticket. Intenta nuevamente.');
     }
   };
 
-  const handleManualTicket = async () => {
-    if (!manualCliente.trim()) {
-      alert('Por favor ingresa el nombre del cliente para el ticket manual.');
-      return;
-    }
+  // Función de ticket manual comentada
+  // const handleManualTicket = async () => {
+  //   if (!manualCliente.trim()) {
+  //     alert('Por favor ingresa el nombre del cliente para el ticket manual.');
+  //     return;
+  //   }
 
-    setIsManualGenerating(true);
-    try {
-      const totalNumber = Number(manualTotal) || 0;
-      const fecha = new Date().toLocaleString('es-MX', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
+  //   setIsManualGenerating(true);
+  //   try {
+  //     const totalNumber = Number(manualTotal) || 0;
+  //     const fecha = new Date().toLocaleString('es-MX', {
+  //       year: 'numeric',
+  //       month: 'long',
+  //       day: 'numeric',
+  //       hour: '2-digit',
+  //       minute: '2-digit',
+  //     });
 
-      const ticketContent = `
-╔═══════════════════════════════════════════════════════╗
-║         LAUNDRYPRO - TICKET MANUAL DEL ENCARGADO      ║
-╚═══════════════════════════════════════════════════════╝
+  //     const ticketContent = `
+  // ╔═══════════════════════════════════════════════════════╗
+  // ║         LAUNDRYPRO - TICKET MANUAL DEL ENCARGADO      ║
+  // ╚═══════════════════════════════════════════════════════╝
 
-Lavandería: ${lavanderia?.nombre ?? 'N/A'}
-Fecha: ${fecha}
-Cliente: ${manualCliente}
-Total estimado: ${new Intl.NumberFormat('es-MX', {
-        style: 'currency',
-        currency: 'MXN',
-      }).format(totalNumber)}
+  // Lavandería: ${lavanderia?.nombre ?? 'N/A'}
+  // Fecha: ${fecha}
+  // Cliente: ${manualCliente}
+  // Total estimado: ${new Intl.NumberFormat('es-MX', {
+  //       style: 'currency',
+  //       currency: 'MXN',
+  //     }).format(totalNumber)}
 
-Notas adicionales:
-${manualNotas || 'Sin notas registradas'}
+  // Notas adicionales:
+  // ${manualNotas || 'Sin notas registradas'}
 
-Generado manualmente por el encargado desde el panel de tickets.
-      `.trim();
+  // Generado manualmente por el encargado desde el panel de tickets.
+  //     `.trim();
 
-      const blob = new Blob([ticketContent], { type: 'text/plain;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `ticket-manual-${manualCliente.replace(/\s+/g, '-')}-${Date.now()}.txt`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      setManualNotas('');
-      setManualCliente('');
-      setManualTotal('');
-    } catch (error) {
-      console.error('Error al generar ticket manual:', error);
-      alert('Error al generar el ticket manual. Intenta nuevamente.');
-    } finally {
-      setIsManualGenerating(false);
-    }
-  };
+  //     const blob = new Blob([ticketContent], { type: 'text/plain;charset=utf-8' });
+  //     const url = URL.createObjectURL(blob);
+  //     const link = document.createElement('a');
+  //     link.href = url;
+  //     link.download = `ticket-manual-${manualCliente.replace(/\s+/g, '-')}-${Date.now()}.txt`;
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     document.body.removeChild(link);
+  //     URL.revokeObjectURL(url);
+  //     setManualNotas('');
+  //     setManualCliente('');
+  //     setManualTotal('');
+  //   } catch (error) {
+  //     console.error('Error al generar ticket manual:', error);
+  //     alert('Error al generar el ticket manual. Intenta nuevamente.');
+  //   } finally {
+  //     setIsManualGenerating(false);
+  //   }
+  // };
 
   return (
     <section className="space-y-6">
@@ -246,16 +260,31 @@ Generado manualmente por el encargado desde el panel de tickets.
                       currency: 'MXN',
                     }).format(pedidoSeleccionado.total)}
                   </p>
+                  {ticketDelPedido.data && (
+                    <div className="mt-2 pt-2 border-t border-[#4C89D9]/20 flex items-center gap-2">
+                      {ticketDelPedido.data.validado ? (
+                        <>
+                          <CheckCircle2 className="h-3 w-3 text-[#6DF2A4]" />
+                          <span className="text-[#6DF2A4]">Ticket validado</span>
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="h-3 w-3 text-[#FFD97B]" />
+                          <span className="text-[#FFD97B]">Ticket pendiente de validar</span>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
 
             <Button
               onClick={() => generateTicket()}
-              disabled={isGenerating || !pedidoSeleccionado}
+              disabled={createTicketMutation.isPending || !pedidoSeleccionado}
               className="w-full bg-[#4C89D9] text-white hover:bg-[#4C89D9]/80"
             >
-              {isGenerating ? (
+              {createTicketMutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Generando...
@@ -263,7 +292,7 @@ Generado manualmente por el encargado desde el panel de tickets.
               ) : (
                 <>
                   <Download className="mr-2 h-4 w-4" />
-                  Descargar Ticket Digital
+                  {ticketDelPedido.data ? 'Regenerar y Descargar Ticket' : 'Generar y Descargar Ticket'}
                 </>
               )}
             </Button>
@@ -319,7 +348,7 @@ Generado manualmente por el encargado desde el panel de tickets.
                         size="sm"
                         variant="outline"
                         onClick={() => generateTicket(pedido)}
-                        disabled={isGenerating}
+                        disabled={createTicketMutation.isPending}
                         className="border-[#25354B]"
                       >
                         <Download className="h-3 w-3" />
@@ -333,6 +362,7 @@ Generado manualmente por el encargado desde el panel de tickets.
         </Card>
       </div>
 
+      {/* Sección de creación manual de tickets comentada
       <Card className="border-[#25354B]/50 bg-[#1B2A40]/60">
         <CardHeader>
           <CardTitle className="text-[#F2F5FA]">Crear ticket manual</CardTitle>
@@ -400,6 +430,7 @@ Generado manualmente por el encargado desde el panel de tickets.
           </Button>
         </CardContent>
       </Card>
+      */}
 
       <Card className="border-[#25354B]/50 bg-[#1B2A40]/60">
         <CardContent className="pt-6">

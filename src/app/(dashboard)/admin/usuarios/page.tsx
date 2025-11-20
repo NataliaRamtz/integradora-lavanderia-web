@@ -26,17 +26,16 @@ import type { AdminUser } from '@/features/admin/users/api';
 
 const roleLabels: Record<string, string> = {
   superadmin: 'Administrador',
-  encargado: 'Supervisor',
-  repartidor: 'Operador',
+  encargado: 'Encargado de lavandería',
+  repartidor: 'Repartidor',
   cliente: 'Cliente',
 };
 
-const roleOrder = ['superadmin', 'encargado', 'repartidor', 'cliente'] as const;
+const roleOrder = ['superadmin', 'encargado', 'cliente', 'repartidor'] as const;
 
-const statusLabels: Record<'active' | 'inactive' | 'pending', string> = {
+const statusLabels: Record<'active' | 'inactive', string> = {
   active: 'Activo',
   inactive: 'Inactivo',
-  pending: 'Pendiente',
 };
 
 const userDetailSchema = z.object({
@@ -67,7 +66,6 @@ const getFullName = (perfil: Record<string, unknown>) => {
   return result.length > 0 ? result : 'Usuario LaundryPro';
 };
 
-const getEmail = (perfil: Record<string, unknown>) => (perfil.email as string | undefined) ?? '—';
 const getPhone = (perfil: Record<string, unknown>) => (perfil.telefono as string | undefined) ?? '—';
 
 export default function AdminUsuariosPage() {
@@ -87,16 +85,30 @@ export default function AdminUsuariosPage() {
     if (!search.trim()) {
       return allUsers;
     }
-    const term = search.toLowerCase();
+    const term = search.toLowerCase().trim();
     return allUsers.filter((user) => {
       const perfil = user.perfil ?? {};
-      const name = getFullName(perfil).toLowerCase();
-      const email = (perfil.email as string | undefined)?.toLowerCase() ?? '';
-      const roleLabel = roleLabels[user.rol] ?? user.rol;
+      
+      // Búsqueda por nombre completo
+      const fullName = getFullName(perfil).toLowerCase();
+      const nombre = ((perfil.nombre as string | undefined) ?? '').toLowerCase();
+      const apellido = ((perfil.apellido as string | undefined) ?? '').toLowerCase();
+      
+      // Búsqueda por email (desde el campo email del usuario)
+      const email = (user.email ?? '').toLowerCase();
+      
+      // Búsqueda por rol (tanto el label traducido como el valor original)
+      const roleLabel = (roleLabels[user.rol] ?? user.rol).toLowerCase();
+      const roleValue = user.rol.toLowerCase();
+      
+      // Buscar en todos los campos
       return (
-        name.includes(term) ||
+        fullName.includes(term) ||
+        nombre.includes(term) ||
+        apellido.includes(term) ||
         email.includes(term) ||
-        (roleLabel?.toLowerCase().includes(term) ?? false)
+        roleLabel.includes(term) ||
+        roleValue.includes(term)
       );
     });
   }, [allUsers, search]);
@@ -150,6 +162,19 @@ export default function AdminUsuariosPage() {
     handleCloseDetail();
   });
 
+  const handleToggleActive = async (user: AdminUser) => {
+    const perfil = user.perfil ?? {};
+    await updateUserMutation.mutateAsync({
+      usuarioAppId: user.id,
+      nombre: ((perfil.nombre as string | undefined) ?? '').trim(),
+      apellido: ((perfil.apellido as string | undefined) ?? '').trim(),
+      email: ((perfil.email as string | undefined) ?? '').trim(),
+      telefono: ((perfil.telefono as string | undefined) ?? '').trim(),
+      rol: user.rol,
+      activo: !user.activo,
+    });
+  };
+
   return (
     <section className="space-y-10 text-slate-100">
       <header className="space-y-2">
@@ -171,7 +196,7 @@ export default function AdminUsuariosPage() {
           <div>
             <CardTitle className="text-xl text-white">Gestión de usuarios</CardTitle>
             <p className="text-sm text-slate-400">
-              Filtra por nombre, correo o rol para localizar usuarios rápidamente.
+              Busca usuarios por nombre completo, correo electrónico o rol (Administrador, Supervisor, Operador, Cliente).
             </p>
           </div>
           <Link href="/register" className="inline-flex items-center gap-2 rounded-xl bg-sky-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-sky-500/25 transition hover:bg-sky-400">
@@ -184,7 +209,7 @@ export default function AdminUsuariosPage() {
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Buscar por nombre, email, rol..."
+              placeholder="Buscar por nombre, correo o rol..."
               className="flex-1 bg-transparent text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none"
             />
             {search ? (
@@ -206,7 +231,7 @@ export default function AdminUsuariosPage() {
             {filteredUsers.map((user) => {
               const perfil = user.perfil ?? {};
               const fullName = getFullName(perfil);
-              const email = getEmail(perfil);
+              const email = user.email ?? '—';
               const phone = getPhone(perfil);
               const roleLabel = roleLabels[user.rol] ?? user.rol;
               const status = user.activo ? 'Activo' : 'Inactivo';
@@ -224,21 +249,28 @@ export default function AdminUsuariosPage() {
                         <p className="text-xs uppercase tracking-widest text-slate-500">{roleLabel}</p>
                       </div>
                     </div>
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${
-                        user.activo
-                          ? 'bg-emerald-500/15 text-emerald-200 border border-emerald-500/30'
-                          : 'bg-rose-500/15 text-rose-200 border border-rose-500/30'
-                      }`}
-                    >
-                      {status}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleActive(user)}
+                        disabled={updateUserMutation.isPending}
+                        className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition-all duration-200 ${
+                          user.activo
+                            ? 'bg-emerald-500/15 text-emerald-200 border border-emerald-500/30 hover:bg-emerald-500/25 cursor-pointer'
+                            : 'bg-rose-500/15 text-rose-200 border border-rose-500/30 hover:bg-rose-500/25 cursor-pointer'
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        {updateUserMutation.isPending && <Loader2 className="h-3 w-3 animate-spin" />}
+                        {status}
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="mt-4 space-y-2 text-sm text-slate-300">
-                    <p className="flex items-center gap-2 text-slate-400">
-                      <Mail className="h-4 w-4 text-slate-500" /> {email}
-                    </p>
+                  <div className="mt-4 space-y-3 text-sm text-slate-300">
+                    <div className="flex items-center gap-2 rounded-lg border border-white/5 bg-slate-950/40 px-3 py-2">
+                      <Mail className="h-4 w-4 text-sky-400 flex-shrink-0" />
+                      <span className="font-medium text-slate-200">{email}</span>
+                    </div>
                     <p className="flex items-center gap-2 text-slate-400">
                       <Phone className="h-4 w-4 text-slate-500" /> {phone}
                     </p>
@@ -296,14 +328,12 @@ const calculateMetrics = (users: AdminUser[]) => {
     (acc, user) => {
       if (user.activo === true) {
         acc.active += 1;
-      } else if (user.activo === false) {
-        acc.inactive += 1;
       } else {
-        acc.pending += 1;
+        acc.inactive += 1;
       }
       return acc;
     },
-    { active: 0, inactive: 0, pending: 0 },
+    { active: 0, inactive: 0 },
   );
 
   const roleCounts = users.reduce<Record<string, number>>((acc, user) => {
@@ -327,7 +357,6 @@ const calculateMetrics = (users: AdminUser[]) => {
     total,
     admins,
     activeToday,
-    pending: statusCounts.pending,
     growthPct,
     statusCounts,
     roleCounts,
@@ -358,11 +387,11 @@ const SummaryGrid = ({ metrics, loading }: { metrics: ReturnType<typeof calculat
       accent: 'bg-violet-500/10 text-violet-200 border border-violet-500/20',
     },
     {
-      title: 'Pendientes',
-      value: metrics.pending,
-      subtitle: 'Invitaciones sin validar',
+      title: 'Inactivos',
+      value: metrics.statusCounts.inactive,
+      subtitle: 'Cuentas desactivadas',
       icon: ChevronRight,
-      accent: 'bg-amber-500/10 text-amber-200 border border-amber-500/20',
+      accent: 'bg-rose-500/10 text-rose-200 border border-rose-500/20',
     },
   ];
 
@@ -429,14 +458,13 @@ const AccountStatus = ({ metrics }: { metrics: ReturnType<typeof calculateMetric
   const entries: Array<{ key: keyof typeof statusLabels; value: number }> = [
     { key: 'active', value: metrics.statusCounts.active },
     { key: 'inactive', value: metrics.statusCounts.inactive },
-    { key: 'pending', value: metrics.statusCounts.pending },
   ];
 
   return (
     <Card className="border-white/10 bg-slate-900/70">
       <CardHeader>
         <CardTitle className="text-white">Estado de cuentas</CardTitle>
-        <p className="text-sm text-slate-400">Seguimiento rápido de activas / inactivas / pendientes.</p>
+        <p className="text-sm text-slate-400">Seguimiento rápido de activas e inactivas.</p>
       </CardHeader>
       <CardContent className="space-y-3">
         {entries.map((entry) => (
@@ -447,9 +475,6 @@ const AccountStatus = ({ metrics }: { metrics: ReturnType<typeof calculateMetric
             </span>
           </div>
         ))}
-        <p className="text-xs text-slate-500">
-          Los usuarios pendientes requieren completar invitación o asignación de permisos.
-        </p>
       </CardContent>
     </Card>
   );
@@ -517,6 +542,7 @@ const UserDetailDrawer = ({
 }) => {
   if (!open || !user) return null;
   const lavanderiaNombre = user.lavanderia_nombre ?? 'Sin lavandería asignada';
+  const email = user.email ?? '—';
 
   return (
     <div className="fixed inset-0 z-40 flex items-end justify-end bg-black/40 backdrop-blur-sm">
@@ -535,11 +561,22 @@ const UserDetailDrawer = ({
           </button>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
-          <p className="text-xs text-slate-500">Lavandería asignada</p>
-          <p className="text-sm font-semibold text-slate-100">{lavanderiaNombre}</p>
-          <p className="mt-2 text-xs text-slate-500">Último acceso</p>
-          <p className="text-sm text-slate-300">{formatDateTime(user.updated_at)}</p>
+        <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-4 space-y-3">
+          <div>
+            <p className="text-xs text-slate-500">Correo electrónico</p>
+            <p className="text-sm font-semibold text-slate-100 flex items-center gap-2">
+              <Mail className="h-4 w-4 text-sky-400" />
+              {email}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-slate-500">Lavandería asignada</p>
+            <p className="text-sm font-semibold text-slate-100">{lavanderiaNombre}</p>
+          </div>
+          <div>
+            <p className="text-xs text-slate-500">Último acceso</p>
+            <p className="text-sm text-slate-300">{formatDateTime(user.updated_at)}</p>
+          </div>
         </div>
 
         <form className="space-y-5" onSubmit={onSubmit}>

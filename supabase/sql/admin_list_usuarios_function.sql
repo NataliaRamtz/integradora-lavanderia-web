@@ -7,6 +7,7 @@ returns table (
   rol public.app_rol,
   activo boolean,
   perfil jsonb,
+  email text,
   lavanderia_id uuid,
   lavanderia_nombre text,
   created_at timestamptz,
@@ -22,12 +23,14 @@ as $$
     ra.rol,
     ra.activo,
     coalesce(pa.perfil::jsonb, '{}'::jsonb) as perfil,
+    u.email,
     ra.lavanderia_id,
     l.nombre as lavanderia_nombre,
     ra.created_at,
     ra.updated_at
   from public.roles_app ra
   left join public.perfiles_app pa on pa.usuario_id = ra.usuario_id
+  left join auth.users u on u.id = ra.usuario_id
   left join public.lavanderias l on l.id = ra.lavanderia_id;
 $$;
 

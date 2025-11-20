@@ -7,6 +7,7 @@ export type AdminUser = {
   rol: Database['public']['Enums']['app_rol'];
   activo: boolean;
   perfil: Record<string, unknown>;
+  email: string | null;
   lavanderia_id: string | null;
   lavanderia_nombre: string | null;
   created_at: string;
@@ -34,6 +35,7 @@ export const fetchAdminUsers = async (): Promise<AdminUser[]> => {
       rol: row.rol as AdminUser['rol'],
       activo: Boolean(row.activo),
       perfil: ((row.perfil as Record<string, unknown> | null) ?? {}) as Record<string, unknown>,
+      email: (row.email as string | null) ?? null,
       lavanderia_id: (row.lavanderia_id as string | null) ?? null,
       lavanderia_nombre: (row.lavanderia_nombre as string | null) ?? null,
       created_at: row.created_at as string,
@@ -89,6 +91,7 @@ export const updateAdminUser = async ({
     rol: row.rol as AdminUser['rol'],
     activo: Boolean(row.activo),
     perfil: ((row.perfil as Record<string, unknown> | null) ?? {}) as Record<string, unknown>,
+    email: (row.email as string | null) ?? null,
     lavanderia_id: (row.lavanderia_id as string | null) ?? null,
     lavanderia_nombre: null,
     created_at: row.created_at as string,

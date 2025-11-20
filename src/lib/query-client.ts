@@ -102,5 +102,13 @@ export const queryKeys = {
     all: ['admin'] as const,
     dashboard: () => [...queryKeys.admin.all, 'dashboard'] as const,
   },
+  tickets: {
+    all: ['tickets'] as const,
+    lists: () => [...queryKeys.tickets.all, 'list'] as const,
+    list: (lavanderiaId: string, pedidoId?: string) =>
+      [...queryKeys.tickets.lists(), lavanderiaId, pedidoId] as const,
+    byPedidoId: (pedidoId: string) =>
+      [...queryKeys.tickets.all, 'pedido', pedidoId] as const,
+  },
 } as const;
 
